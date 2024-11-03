@@ -1,0 +1,268 @@
+<html>
+
+<head>
+    <title>Akantares</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <style>
+        body {
+            background-color: #f0f0f0;
+        }
+
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            padding: 0
+        }
+		
+		body, select {
+			font-family: sans-serif;
+			font-smooth: never;
+			-webkit-font-smoothing: none;
+		}
+		
+		#everything-container {
+			height: fit-content;
+			width: fit-content;
+		}
+		
+        #canvas-container {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+			min-width: 320px;
+			min-height: 240px;
+			height: fit-content;
+        }
+		#canvas-container canvas {
+			position: absolute;
+		}
+		#canvas-container select{
+			position: absolute;
+			left: 23px;
+			top: 138px;
+			width: 181px;
+			height: 90px;
+		}
+		
+		#chat-container { margin-top: 1rem}
+		#chat-form {padding: 0.25rem; position: relative; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box;}
+		#chat-input {flex-grow: 1;}
+		#chat-list { background-color: #ffffff; list-style-type: none; margin: 0; padding: 0; }
+		#chat-list > li { padding: 0.5rem 1rem; }
+		.host-name {color: rgb(0,128,255)}
+		.guest-name {color: rgb(231,87,0)}
+    }
+    </style>
+	<link id='akantaresIcon' rel="icon" href="1.ico"></link>
+</head>
+
+<body>
+    
+	<div id="everything-container">
+    <div id="canvas-container">
+		<div id='fireDiv' style='visibility: hidden; margin:0; padding:0; width: fit-content'>
+			Direction:
+			<input type="range" min="0" max="450" value="360" class="slider" id="fireRange" style='margin: 5px'>
+			<button id='fireButton' onclick='game.fire()' style='margin: 5px'>Go!</button>
+		</div>
+		<!-- <br> -->
+        <canvas id="game-canvas" style='image-rendering: pixelated'></canvas>
+		<select id="lobbyList" size=7 style='visibility:hidden'></select>
+		<!-- <br><br> -->
+		<!-- <button id='zoomButton' onclick="window.keysBeingPressed['z']=true;" style='visibility:hidden'>Zoom</button> -->
+		<!-- <br> -->
+		<!-- <button id='makehost' onclick="makeHost();" style='visibility:visible'>make host</button> -->
+		<!-- <button id='checkhost' onclick="console.log(game.playerType);" style='visibility:visible'>check if host</button> -->	
+    </div>
+	<div id='chat-container' style='visibility:hidden'>
+			<ul id='chat-list'><li style='background-color:#f0f0f0'>Chat:</li></ul>
+			<form id="chat-form" action="">
+			<input id="chat-input" autocomplete="off" />
+			<button>Send</button>
+			</form>
+	</div>
+	</div>
+
+	<script type="text/javascript" src="akantares.js"></script>
+    <script type="text/javascript" src="akantares-ui.js"></script>
+
+    <script>
+			window.scale = 1;
+			window.width = 320;
+			window.height = 240;
+			window.fps = 60;
+			
+            const canvasContainer = document.getElementById("canvas-container");
+            const gameCanvas = document.getElementById("game-canvas");
+			gameCanvas.focus();
+            gameCanvas.width = scale*width;
+            gameCanvas.height = scale*height;
+			canvasContainer.style.height = gameCanvas.height + document.getElementById('fireDiv').offsetHeight; //there has to be a css way to do this???
+			<!-- if('ontouchstart' in window){ -->
+				<!-- document.getElementById('zoomButton').style.visibility = 'visible'; -->
+			<!-- } -->
+            const ui = new GameUI(gameCanvas);
+			const game = new Game();
+			ui.setGame(game);
+			setInterval(game.update.bind(game), 1000/fps);
+
+			window.keysBeingPressed = {
+			'ArrowLeft': false,
+			'ArrowRight': false,
+			'ArrowUp': false,
+			'ArrowDown': false,
+			'Escape': false,
+			' ': false,
+			'f': false,
+			'g': false,
+			'k': false,
+			'z': false,
+			'Shift': false
+			};
+			
+            document.addEventListener('keyup', (e) => {
+				keysBeingPressed[e.key] = false;
+			}, true);
+			
+            document.addEventListener('keydown', (e) => {
+				keysBeingPressed[e.key] = true;
+            }, true);
+			
+			
+			function getMousePosition(canvas, event) {
+				let rect = canvas.getBoundingClientRect();
+				let x = event.clientX - rect.left;
+				let y = event.clientY - rect.top;
+				return [x, y];
+			}
+			
+			function makeHost(){
+				game.playerType = 'host';
+			}
+			
+			document.addEventListener('input', (e) => {
+				if(game.whoseTurn==0){game.playerAngle = document.getElementById('fireRange').value;}
+				else if(game.whoseTurn==1){game.enemyAngle = document.getElementById('fireRange').value;}
+            }, true);
+			
+			document.addEventListener('visibilitychange', function() {
+				if (document.visibilityState != 'visible') {
+					window.audioContext.suspend();
+					if(game.gameMode!=2){game.gameState = 'escmenu';} //no pausing in online games
+				}
+			});
+			
+			function resizeSlider(){
+				document.getElementById('fireRange').style.width = document.getElementById('fireRange').getBoundingClientRect().width + gameCanvas.width - document.getElementById('fireDiv').getBoundingClientRect().width -10; //resizing firing slider and stuff to maintain the same width as the game canvas
+			}
+			document.addEventListener('orientationchange', resizeSlider());
+			
+			gameCanvas.addEventListener('mousedown', (e) => {
+                click_coords = getMousePosition(gameCanvas, e);
+				window.clickHandling(click_coords[0], click_coords[1], e=e);
+            }, true);
+			window.clickHandling = (x, y, e) => {
+				if(game.gameState == 'lobby'){
+					if(x>226 && x<226+76 && y>88 && y<88+22){ //join
+						if(document.getElementById('lobbyList').value == ''){game.lobbyString = 'Please select a host from the list';}
+						if(game.mySocketID == JSON.parse(document.getElementById('lobbyList').value).hostID){game.lobbyString = 'You cannot join your own game';}
+						if(document.getElementById('lobbyList').value != '' && game.mySocketID != JSON.parse(document.getElementById('lobbyList').value).hostID){ //something must be selected in the list, and also you cannot join your own hosted session as a guest
+							socket.emit('joining event', document.getElementById('lobbyList').value);
+							game.playerType = 'guest';
+							game.myHostID = JSON.parse(document.getElementById('lobbyList').value).hostID;
+						}
+					}
+					if(x>226 && x<226+76 && y>115 && y<115+22){ //host
+						if(game.playerType == 'host'){
+							game.lobbyString = 'You are already a host';
+						}
+						else{ //the same 'person' can't host multiple games
+							game.playerType = 'host';
+							let newSession = {hostName:game.playerName, time:new Date(Date.now()), hostID:null, guestID:null};
+							socket.emit('hosting event', newSession);
+						}
+					}
+					if(x>226 && x<226+76 && y>206 && y<206+22){ //quit
+						ui.frameCount = 0;
+						ui.stop_bgm();
+						window.audioContext.resume();
+						game.gameState = 'startscreen';
+						game.previousGameState = 'startscreen';
+						game.readyFadeIn();
+						document.getElementById('lobbyList').style.visibility = 'hidden';
+					}
+					if(x>22 && x<22+76 && y>206 && y<206+22){ //reload
+						socket.emit('reload event', null);
+					}
+				}
+			}
+    </script>
+
+
+<script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+<script>
+const socket = io.connect();
+
+function helloClick(){socket.emit('hello event','hello world');}
+
+function refreshLobby(sessions){
+	let lobbyList = document.getElementById('lobbyList');
+	for(i=0; i<sessions.length; i++){
+		if(sessions[i].guestID != null){
+			lobbyList.remove(i);
+		}
+		if(sessions[i].guestID == null){
+			let opt = document.createElement('option');
+			opt.value = JSON.stringify(sessions[i]);
+			opt.innerHTML = sessions[i].hostName.padEnd(11, ' ') + sessions[i].time.slice(11,19) + ' ' + sessions[i].time.slice(0,10);
+			lobbyList.appendChild(opt);
+		}
+	}
+}
+
+//upon any event (hosting or joining) that changes the list of sessions, the list of sessions is synced between the server and the client. the client knows about all sessions, not just its own. it was just simpler to do it that way
+socket.on('hosting event', (sessions) => {
+    game.sessions = sessions;
+	refreshLobby(sessions);
+	game.mySocketID = sessions[sessions.length-1].hostID; //assuming the most recently joined session was the one you just hosted. race conditions may cause problems down the line? idk much about this
+	game.myHostID = sessions[sessions.length-1].hostID;
+});
+socket.on('reload event', (sessions) => {
+    game.sessions = sessions;
+	refreshLobby(sessions);
+});
+socket.on('joining event', (sessions) => {
+    game.sessions = sessions;
+	refreshLobby(sessions);
+});
+
+
+//chat feature
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const chatList = document.getElementById('chat-list');
+
+chatForm.addEventListener('submit', (e) => {
+	e.preventDefault();
+	if (chatInput.value) {
+		socket.emit('chat event', {posterType:game.playerType, posterName:game.playerName, hostID:game.myHostID, message:chatInput.value});
+		chatInput.value = '';
+	}
+});
+
+socket.on('chat event', (chatObject) => {
+    console.log(chatObject);
+	let item = document.createElement('li');
+    item.innerHTML = "<b class='" + chatObject.posterType + "-name'>"+ chatObject.posterName + ":</b> " + chatObject.message;
+    chatList.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+});
+
+</script>
+
+	
+</body>
+
+</html>
