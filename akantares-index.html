@@ -46,6 +46,13 @@
 			height: 90px;
 		}
 		
+		#lobbyList{
+			overflow: auto;
+			font-size: 13px;
+		}
+		
+		#emoji-select {margin: 0.25rem; }
+		
 		#chat-container { margin-top: 1rem}
 		#chat-form {padding: 0.25rem; position: relative; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box;}
 		#chat-input {flex-grow: 1;}
@@ -69,7 +76,7 @@
 		</div>
 		<!-- <br> -->
         <canvas id="game-canvas" style='image-rendering: pixelated'></canvas>
-		<select id="lobbyList" size=7 style='visibility:hidden'></select>
+		<select id="lobbyList" size=6 style='visibility:hidden'></select>
 		<!-- <br><br> -->
 		<!-- <button id='zoomButton' onclick="window.keysBeingPressed['z']=true;" style='visibility:hidden'>Zoom</button> -->
 		<!-- <br> -->
@@ -77,11 +84,15 @@
 		<!-- <button id='checkhost' onclick="console.log(game.playerType);" style='visibility:visible'>check if host</button> -->	
     </div>
 	<div id='chat-container' style='visibility:hidden'>
-			<ul id='chat-list'><li style='background-color:#f0f0f0'>Chat:</li></ul>
+			Player face:<select id="emoji-select" onchange="socket.emit('emoji event', {hostID:game.myHostID, playerType:game.playerType, value:this.value});"></select>
+			<ul id='chat-list'>
+			<li style='background-color:#f0f0f0'><u>Chat:</u></li>
+			</ul>
 			<form id="chat-form" action="">
 			<input id="chat-input" autocomplete="off" />
 			<button>Send</button>
 			</form>
+			
 	</div>
 	</div>
 
@@ -143,8 +154,8 @@
 			}
 			
 			document.addEventListener('input', (e) => {
-				if(game.whoseTurn==0){game.playerAngle = document.getElementById('fireRange').value;}
-				else if(game.whoseTurn==1){game.enemyAngle = document.getElementById('fireRange').value;}
+				if((game.gameMode==0) || (game.gameMode==1 && game.whoseTurn==0) || (game.gameMode==2 && game.playerType=='host')){game.playerAngle = document.getElementById('fireRange').value;}
+				else if((game.gameMode==1 && game.whoseTurn==1) || (game.gameMode==2 && game.playerType=='guest')){game.enemyAngle = document.getElementById('fireRange').value;}
             }, true);
 			
 			document.addEventListener('visibilitychange', function() {
@@ -158,6 +169,14 @@
 				document.getElementById('fireRange').style.width = document.getElementById('fireRange').getBoundingClientRect().width + gameCanvas.width - document.getElementById('fireDiv').getBoundingClientRect().width -10; //resizing firing slider and stuff to maintain the same width as the game canvas
 			}
 			document.addEventListener('orientationchange', resizeSlider());
+			
+			const emojis = ['🟡','😄','🤨','😥','😌','😑','🤪','😐','😰','😃','😱','😎','😒','😡','😏','😐'];
+			for(let i=0; i<emojis.length; i++){
+				let opt = document.createElement('option');
+				opt.value = i;
+				opt.innerHTML = emojis[i];
+				document.getElementById('emoji-select').appendChild(opt);
+			}
 			
 			gameCanvas.addEventListener('mousedown', (e) => {
                 click_coords = getMousePosition(gameCanvas, e);
@@ -180,7 +199,7 @@
 						}
 						else{ //the same 'person' can't host multiple games
 							game.playerType = 'host';
-							let newSession = {hostName:game.playerName, time:new Date(Date.now()), hostID:null, guestID:null};
+							let newSession = {hostName:game.playerName, guestName:null, time:new Date(Date.now()), hostID:null, guestID:null};
 							socket.emit('hosting event', newSession);
 						}
 					}
@@ -216,7 +235,7 @@ function refreshLobby(sessions){
 		if(sessions[i].guestID == null){
 			let opt = document.createElement('option');
 			opt.value = JSON.stringify(sessions[i]);
-			opt.innerHTML = sessions[i].hostName.padEnd(11, ' ') + sessions[i].time.slice(11,19) + ' ' + sessions[i].time.slice(0,10);
+			opt.innerHTML = sessions[i].hostName.padEnd(9, ' ') + ' - ' + sessions[i].time.slice(11,19) + ' ' + sessions[i].time.slice(0,10);
 			lobbyList.appendChild(opt);
 		}
 	}
@@ -237,9 +256,30 @@ socket.on('joining event', (sessions) => {
     game.sessions = sessions;
 	refreshLobby(sessions);
 });
+socket.on('start playing', (session) => { //this code is copied from akantares.js, the case where you're playing 1player and press space at the title screen
+	game.resetStuff('gameover');
+	window.audioContext.resume();
+	ui.sfxs['OK'].play();
+    game.gameState = 'playing';
+	game.gameSubState = 'ready';
+	game.previousGameState = 'playing';
+	game.hostName = session.hostName;
+	game.guestName = session.guestName;
+});
+socket.on('disconnect event', (msg) => { //this code is copied from the restart option in akantares.js (pressing 'g' on escmenu)
+    game.disconnectTimer = true;
+	ui.frameCount = 2*window.fps; //in conjunction with checking for >3*fps in akantares.js, this avoids the re-popping up of the 'please take your shot text' when a disconnect happens
+});
+
+socket.on('emoji event', (obj) => {
+    console.log(obj);
+	if(obj.playerType == 'host'){game.hostEmoji = obj.value;}
+	if(obj.playerType == 'guest'){game.guestEmoji = obj.value;}
+});
 
 
 //chat feature
+//todo: make sure chat message input doesn't get picked up by the game controls (spacebar for fire, etc)!!
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const chatList = document.getElementById('chat-list');
@@ -258,6 +298,24 @@ socket.on('chat event', (chatObject) => {
     item.innerHTML = "<b class='" + chatObject.posterType + "-name'>"+ chatObject.posterName + ":</b> " + chatObject.message;
     chatList.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
+});
+
+
+//firing events
+socket.on('fire event', (fireObject) => {
+    console.log(fireObject);
+	game.hostFired = fireObject.hostFired;
+	game.guestFired = fireObject.guestFired;
+	if(fireObject.hostAngle!=null && game.playerType=='guest'){game.playerAngle = fireObject.hostAngle;}
+	if(fireObject.guestAngle!=null && game.playerType=='host'){game.enemyAngle = fireObject.guestAngle;}
+	game.fire('no-emit');
+});
+
+//resetting planets after a shot
+socket.on('resetPlanets event', (resetPlanetsObj) => {
+    console.log(resetPlanetsObj);
+	game.numPlanets = resetPlanetsObj.numPlanets;
+	game.planets = resetPlanetsObj.planets;
 });
 
 </script>

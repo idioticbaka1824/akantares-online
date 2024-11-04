@@ -43,7 +43,7 @@
 			
 			//stuff needed for online 2player
 			this.playerType = 'guest';
-			this.disabled = ''; //whose controls are disabled temporarily. ''=neither, 'host'=host, 'guest'=guest
+			this.disabled = false; //whether your controls are disabled temporarily (e.g. when waiting for opponent's shot)
 			this.hostFired = false;
 			this.guestFired = false;
 			this.sessions = []; //for listing them in the lobby. see server's index.js for structure of a session object
@@ -51,6 +51,11 @@
 			this.myHostID = null;
 			this.lobbyString = '';
 			this.chat = [];
+			this.hostName = '';
+			this.guestName = '';
+			this.hostEmoji = 0;
+			this.guestEmoji = 0;
+			this.disconnectTimer = false; //there has to be a better way for this but eh
 			
 			//misc
 			this.score = [0,0];
@@ -68,7 +73,6 @@
 			this.resumeFrame = 0; //keep track of which frame you were on when paused, so that the game doesn't keep going in the background
 			
 			this.playerName = 'debugName';
-			// this.playerName = window.prompt('Name: ');
 			this.playerAngle = 360;
 			this.playerPos = {x:40, y:window.height/2, h:false}; //h for whether it's been hit
 			this.playerMissilePos = {x:this.playerPos.x+10*Math.cos(this.playerAngle*Math.PI/180), y:this.playerPos.y+10*Math.sin(this.playerAngle*Math.PI/180)};
@@ -92,9 +96,26 @@
 			this.debugInvulnerability = false;
 		}
 		
-		fire(){
+		fire(arg='emit'){
 			if(this.gameMode!=2 || !this.justStartedPlaying){ //otherwise firing will cause the nameplates to re-popup (nameplates only used in online mode)
 				ui.sfxs['OK'].play();
+				
+				if(arg=='emit' && !(this.gameMode==1 && this.whoseTurn==0)){
+					document.getElementById('fireRange').style.visibility = 'hidden';
+					document.getElementById('fireButton').disabled = true;
+					ui.frameCount = 0;
+				}
+				if(this.gameMode==1){this.whoseTurn = this.whoseTurn + 1;	ui.frameCount = 0;}
+				if(this.gameMode == 2 && arg=='emit'){
+					if(this.playerType == 'host'){this.hostFired = true;}
+					if(this.playerType == 'guest'){this.guestFired = true;}
+					
+					let fireObject = {hostID: this.myHostID, hostFired:this.hostFired, guestFired:this.guestFired, hostAngle:null, guestAngle:null};
+					if(this.playerType=='host'){fireObject.hostAngle=this.playerAngle;}
+					if(this.playerType=='guest'){fireObject.guestAngle=this.enemyAngle;}
+					socket.emit('fire event', fireObject);
+					ui.frameCount = 0;
+				}
 				
 				if(this.gameMode==0 || this.whoseTurn>0 || (this.hostFired&&this.guestFired)){
 					this.resultString = '';
@@ -103,16 +124,6 @@
 					this.gameSubState = 'countdown';
 					ui.frameCount = 0;
 				}
-				if(!(this.gameMode==1 && this.whoseTurn==0)){
-					document.getElementById('fireRange').style.visibility = 'hidden';
-					document.getElementById('fireButton').disabled = true;
-				}
-				if(this.gameMode==1){this.whoseTurn = this.whoseTurn + 1;}
-				if(this.gameMode == 2){
-					if(this.playerType == 'host'){this.hostFired = true;}
-					if(this.playerType == 'guest'){this.guestFired = true;}
-				}
-				ui.frameCount = 0;
 			}
 		}
 		
@@ -124,13 +135,16 @@
 					this.enemyTrail = [];
 					break;
 					
-				case 'planets':
+				case 'planets': //todo!!: put in some code here that resets the players' positions too
 					this.resetStuff('trail');
 					this.planets = [];
-					this.numPlanets = 1+Math.floor(4*Math.random());
-					for(let i=0; i<this.numPlanets; i++){
-						this.planets[i] = {x:60+160*Math.random(), y:12+200*Math.random(), m:(Math.random()<0.3), h:0};
+					if(this.gameMode != 2){
+						this.numPlanets = 1+Math.floor(4*Math.random());
+						for(let i=0; i<this.numPlanets; i++){
+							this.planets[i] = {x:60+160*Math.random(), y:12+200*Math.random(), m:(Math.random()<0.3), h:0};
+						}
 					}
+					if(this.gameMode == 2 && typeof socket !=='undefined'){socket.emit('resetPlanets event', {hostID:this.myHostID});}
 					break;
 					
 				case 'gameover':
@@ -160,6 +174,7 @@
 					this.disabled = '';
 					this.hostFired = false;
 					this.guestFired = false;
+					this.disabled = false;
 					
 					if(this.resultString.slice(-3)=='hit'){this.resetStuff('planets');}
 					this.planets = this.planets.filter((p)=>p.h-p.m<2);
@@ -190,24 +205,37 @@
 					break;
 				
 				case 'playing':
-					// if(this.justStartedPlaying){
-						// ui.se[6].play();
-						// this.justStartedPlaying = false;
-					// }
+					
 					if(document.getElementById('fireDiv').style.visibility=='hidden'){document.getElementById('fireDiv').style.visibility='visible';}
-					if(this.gameMode==2){document.getElementById('chat-container').style.visibility = 'visible';}
+					if(this.gameMode==2){
+						document.getElementById('chat-container').style.visibility = 'visible';
+						document.getElementById('lobbyList').style.visibility = 'hidden';
+						this.disabled = (this.playerType=='host' && this.hostFired) || (this.playerType=='guest' && this.guestFired);
+					}
 					if(ui.frameCount>1.5*window.fps){
 						this.justStartedPlaying = false;
+					}
+					if(ui.frameCount>3*window.fps){
+						if(this.disconnectTimer == true){
+							this.disconnectTimer = false;
+							ui.stop_bgm();
+							window.audioContext.resume();
+							this.gameState = 'startscreen';
+							this.previousGameState = 'startscreen';
+							this.readyFadeIn;
+							document.getElementById('chat-container').style.visibility = 'hidden';
+						}
 					}
 										
 					switch(this.gameSubState){
 						
 						case 'ready':
-							if(this.whoseTurn==0){this.playerAngle = document.getElementById('fireRange').value;}
-							else if(this.whoseTurn==1){this.enemyAngle = document.getElementById('fireRange').value;}
+							if((game.gameMode==0) || (game.gameMode==1 && game.whoseTurn==0) || (game.gameMode==2 && game.playerType=='host' && this.disabled==false)){this.playerAngle = document.getElementById('fireRange').value;} //using 'game.' instead of 'this.' for some conditions because they were copied over from the html file. it still seems to work so never mind
+							else if((game.gameMode==1 && game.whoseTurn==1) || (game.gameMode==2 && game.playerType=='guest' && this.disabled==false)){this.enemyAngle = document.getElementById('fireRange').value;}
 							break;
 							
 						case 'countdown':
+							document.getElementById('fireButton').disabled = true;
 							if(ui.frameCount > 2*window.fps){
 								this.resultString = ''; //putting this here instead of in the reset function so that the ui script knows what happened last and can decide whether or not to fade-in
 								this.gameSubState = 'flying';
@@ -216,7 +244,7 @@
 							break;
 							
 						case 'flying':
-						
+							document.getElementById('fireButton').disabled = true;
 							//player missile movement
 							if(!this.playerCollided){
 								this.playerMissileAcc.x = 0;
@@ -355,6 +383,7 @@
 								else{
 									this.resetStuff('shot');
 									document.getElementById('fireRange').style.visibility = 'visible';
+									document.getElementById('fireButton').disabled = false;
 									this.gameSubState = 'ready';
 									ui.frameCount = 0;
 									if(this.resultString=='1hit' || this.resultString=='2hit'){this.readyFadeIn();}
@@ -378,6 +407,7 @@
 		}
 		
 		keyHandling(ekeys) {
+		if(document.getElementById('chat-input') !== document.activeElement){ //eg: spacebar is generally used to 'confirm' game action. but when text cursor is in chat input, spacebar should only type a space. etc.
 			if(ekeys['z']){
 				window.scale = window.scale==1?2:1;
 				gameCanvas.width = window.scale*window.width;
@@ -387,7 +417,7 @@
 				resizeSlider();
 				canvasContainer.style.height = gameCanvas.height + document.getElementById('fireDiv').offsetHeight; //there has to be a css way to do this???
 				let lobbyList = document.getElementById('lobbyList');
-				let newLobbyListStyle = window.scale==2 ? 'position:absolute; left:46px; top:244px; width:362px; height:180px' : 'position:absolute; left:23px; top:138px; width:181px; height:90px';
+				let newLobbyListStyle = window.scale==2 ? 'position:absolute; font-size:26px; left:46px; top:244px; width:362px; height:180px' : 'position:absolute; font-size:13px; left:23px; top:138px; width:181px; height:90px';
 				newLobbyListStyle = 'visibility:' + (this.gameState=='lobby'?'visible':'hidden') + '; ' + newLobbyListStyle;
 				lobbyList.style = newLobbyListStyle;
 				
@@ -434,6 +464,7 @@
 							this.previousGameState = 'playing';
 						}
 						else if(this.gameMode == 2){
+							// this.playerName = window.prompt('Please enter your name: '); //annoying during testing
 							this.gameState = 'lobby';
 							this.previousGameState = 'lobby';
 							socket.emit('reload event', null); //to display available hosts as soon as you enter lobby (pretend you entered and immediately hit reload)
@@ -451,21 +482,21 @@
 					
 					if(this.gameSubState == 'ready'){
 						if(ekeys['ArrowLeft']){
-							if(this.whoseTurn == 0){
+							if((this.gameMode==0) || (this.gameMode==1 && this.whoseTurn == 0) || (this.gameMode==2 && this.playerType=='host' && this.disabled==false)){
 								this.playerAngle -= (3-2*ekeys['Shift']); //holding shift for finer control
 								document.getElementById('fireRange').value = (this.playerAngle+360)%360; //periodic boundary conditions as the slider represents an azimuthal angle
 							}
-							else if(this.whoseTurn == 1){
+							else if((this.gameMode==1 && this.whoseTurn == 1) || (this.gameMode==2 && this.playerType=='guest' && this.disabled==false)){
 								this.enemyAngle -= (3-2*ekeys['Shift']);
 								document.getElementById('fireRange').value = (this.enemyAngle+360)%360;
 							}
 						}
 						if(ekeys['ArrowRight']){
-							if(this.whoseTurn == 0){
+							if((this.gameMode==0) || (this.gameMode==1 && this.whoseTurn == 0) || (this.gameMode==2 && this.playerType=='host' && this.disabled==false)){
 								this.playerAngle -= -(3-2*ekeys['Shift']); //using += 1 instantly slides it all the way to max. why the heck?
 								document.getElementById('fireRange').value = (this.playerAngle+360)%360;
 							}
-							else if(this.whoseTurn == 1){
+							else if((this.gameMode==1 && this.whoseTurn == 1) || (this.gameMode==2 && this.playerType=='guest' && this.disabled==false)){
 								this.enemyAngle -= -(3-2*ekeys['Shift']);
 								document.getElementById('fireRange').value = (this.enemyAngle+360)%360;
 							}
@@ -517,6 +548,7 @@
 					}
 					break;
 			}
+		}
 		}
 		
 	}

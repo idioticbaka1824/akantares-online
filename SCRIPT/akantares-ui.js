@@ -280,9 +280,7 @@ THREE`.split('\n');
 					this.selectString = this.frameCount%20<10==0 ? '> ' : '- ';
 					this.drawString(window.width/2, window.height-36, (this.game.gameMode==0?this.selectString:'')+'Single Player', 1,'centre');
 					this.drawString(window.width/2, window.height-24, (this.game.gameMode==1?this.selectString:'')+'Multiplayer (Offline)', 1,'centre');
-						this.ctx.filter = 'brightness(50%)';
 					this.drawString(window.width/2, window.height-12, (this.game.gameMode==2?this.selectString:'')+'Multiplayer (Online)', 1,'centre');
-						this.ctx.filter = 'none';
 					break;
 					
 				
@@ -312,15 +310,23 @@ THREE`.split('\n');
 				
 				case 'playing':
 					
+					if(this.game.disconnectTimer == true){this.ctx.filter = 'brightness(50%)';}
+					
 					for (let i=0; i<5; i++){
 						this.ctx.drawImage(this.bmps['WINMARK'], 8*(i<this.game.score[0]),0,8,8, 8,100+i*8,8,8);
 						this.ctx.drawImage(this.bmps['WINMARK'], 8*(i<this.game.score[1]),0,8,8, 304,100+i*8,8,8);
 					}
 					
-					if(!(this.game.gameSubState=='collided' && this.game.playerPos.h)){this.ctx.drawImage(this.bmps['PLANET'], 0+16*(this.frameCount%6==0 && this.game.playerPos.h),0+32*(this.frameCount%6==0 && this.game.playerPos.h),16,16, this.game.playerPos.x-16/2, this.game.playerPos.y-16/2, 16,16);} //player planet. alternate with white circle after getting hit but before conclusion of the overall shot. don't draw if it has been hit and exploding animation is ongoing.
-					if(!(this.game.gameSubState=='collided' && this.game.enemyPos.h)){this.ctx.drawImage(this.bmps['PLANET'], 0+16*(this.frameCount%6==0 && this.game.enemyPos.h),16+16*(this.frameCount%6==0 && this.game.enemyPos.h),16,16, this.game.enemyPos.x-16/2, this.game.enemyPos.y-16/2, 16,16);} //enemy planet
-					this.ctx.drawImage(this.bmps['CATAPULT'], 4*(this.frameCount%10<5 && this.game.gameSubState=='ready')+1, 1, 3, 3, this.game.playerPos.x+10*Math.cos(this.game.playerAngle*Math.PI/180)-3/2, this.game.playerPos.y+10*Math.sin(this.game.playerAngle*Math.PI/180)-3/2, 3, 3); //player catapult
-					this.ctx.drawImage(this.bmps['CATAPULT'], 1, 1, 3, 3, this.game.enemyPos.x+10*Math.cos(this.game.enemyAngle*Math.PI/180)-3/2, this.game.enemyPos.y+10*Math.sin(this.game.enemyAngle*Math.PI/180)-3/2, 3, 3); //enemy catapult
+					if(!(this.game.gameSubState=='collided' && this.game.playerPos.h)){this.ctx.drawImage(this.bmps['PLANET'], (this.frameCount%6==0 && this.game.playerPos.h)?16:16*this.game.hostEmoji,0+32*(this.frameCount%6==0 && this.game.playerPos.h),16,16, this.game.playerPos.x-16/2, this.game.playerPos.y-16/2, 16,16);} //player planet. alternate with white circle after getting hit but before conclusion of the overall shot. don't draw if it has been hit and exploding animation is ongoing.
+					if(!(this.game.gameSubState=='collided' && this.game.enemyPos.h)){this.ctx.drawImage(this.bmps['PLANET'], (this.frameCount%6==0 && this.game.enemyPos.h)?16:16*this.game.guestEmoji,16+16*(this.frameCount%6==0 && this.game.enemyPos.h),16,16, this.game.enemyPos.x-16/2, this.game.enemyPos.y-16/2, 16,16);} //enemy planet
+					if(this.game.gameMode !=2 || this.game.playerType=='host'){
+						this.ctx.drawImage(this.bmps['CATAPULT'], 4*(this.frameCount%10<5 && this.game.gameSubState=='ready')+1, 1, 3, 3, this.game.playerPos.x+10*Math.cos(this.game.playerAngle*Math.PI/180)-3/2, this.game.playerPos.y+10*Math.sin(this.game.playerAngle*Math.PI/180)-3/2, 3, 3); //player catapult
+						this.ctx.drawImage(this.bmps['CATAPULT'], 1, 1, 3, 3, this.game.enemyPos.x+10*Math.cos(this.game.enemyAngle*Math.PI/180)-3/2, this.game.enemyPos.y+10*Math.sin(this.game.enemyAngle*Math.PI/180)-3/2, 3, 3); //enemy catapult
+					}
+					if(this.game.gameMode ==2 && this.game.playerType=='guest'){
+						this.ctx.drawImage(this.bmps['CATAPULT'], 4*(this.frameCount%10<5 && this.game.gameSubState=='ready')+1, 1, 3, 3, this.game.enemyPos.x+10*Math.cos(this.game.enemyAngle*Math.PI/180)-3/2, this.game.enemyPos.y+10*Math.sin(this.game.enemyAngle*Math.PI/180)-3/2, 3, 3); //'enemy' catapult (guest in 2player online)
+						this.ctx.drawImage(this.bmps['CATAPULT'], 1, 1, 3, 3, this.game.playerPos.x+10*Math.cos(this.game.playerAngle*Math.PI/180)-3/2, this.game.playerPos.y+10*Math.sin(this.game.playerAngle*Math.PI/180)-3/2, 3, 3);
+					}
 					for(let i=0; i<this.game.playerTrail.length; i++){
 						this.ctx.drawImage(this.bmps['PLANET'], 43, 35, 1,1, this.game.playerTrail[i].x, this.game.playerTrail[i].y, 1,1); //playerMissile trail
 					}
@@ -342,8 +348,8 @@ THREE`.split('\n');
 						this.ctx.drawImage(this.bmps['NAMEPLATE'], 0,0,64,t*24, this.game.enemyPos.x-64/2, this.game.enemyPos.y-16/2-t*24, 64,t*24);
 						this.ctx.font = '9px courier new';
 						this.ctx.textAlign = 'center';
-						this.ctx.fillText(this.game.playerName, this.game.playerPos.x, this.game.playerPos.y-16/2-24/2); //12 letters fit in the nameplate at 9px courier new
-						this.ctx.fillText('enemy', this.game.enemyPos.x, this.game.enemyPos.y-16/2-24/2);
+						this.ctx.fillText(this.game.hostName, this.game.playerPos.x, this.game.playerPos.y-16/2-24/2); //12 letters fit in the nameplate at 9px courier new
+						this.ctx.fillText(this.game.guestName, this.game.enemyPos.x, this.game.enemyPos.y-16/2-24/2);
 					}
 					
 					if(this.game.gameSubState == 'ready'){
@@ -354,6 +360,14 @@ THREE`.split('\n');
 						}
 						if(this.game.gameMode == 0){this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Please Take your shot'+'.'.repeat(Math.abs(this.frameCount)/30%4));}
 						if(this.game.gameMode == 1){this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Player '+(1+this.game.whoseTurn).toString()+"'s turn"+'.'.repeat(Math.abs(this.frameCount)/30%4));}
+						if(this.game.gameMode == 2){
+							if((this.game.playerType=='host' && this.game.hostFired==false) || (this.game.playerType=='guest' && this.game.guestFired==false)){
+								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Please Take your shot'+'.'.repeat(Math.abs(this.frameCount)/30%4));
+							}
+							if((this.game.playerType=='host' && this.game.hostFired==true && this.game.guestFired==false) || (this.game.playerType=='guest' && this.game.guestFired==true && this.game.hostFired==false)){
+								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Waiting for opponent'+'.'.repeat(Math.abs(this.frameCount)/30%4));
+							}
+						}
 					}
 					
 					if(this.game.gameSubState == 'countdown'){
@@ -418,11 +432,24 @@ THREE`.split('\n');
 							this.bgms_playing['GAMEOVER'] = true;
 						}
 						if(this.game.gameMode==0 || this.game.gameSubState=='draw'){this.ctx.drawImage(this.bmps['RESULT'], 0, 72+40*(this.game.gameSubState=='lose')+80*(this.game.gameSubState=='draw'), 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);} //win, lose, draw images. only in single player
-						if(this.game.gameMode>0){ //2player mode. the 'win' and 'lose' strings are recycled to mean player1 win and player2 win respectively.
+						if(this.game.gameMode==1){ //2player offline mode. the 'win' and 'lose' strings are recycled to mean player1 win and player2 win respectively.
 							if(this.game.gameSubState=='win'){this.drawString(window.width/2, window.height/2, 'Player 1 win!', 2, 'centre');}
 							if(this.game.gameSubState=='lose'){this.drawString(window.width/2, window.height/2, 'Player 2 win!', 2, 'centre');}
 						}
+						if(this.game.gameMode==2){ //2player online mode. 'win' and 'lose' means host win or guest win respectively.
+							if((this.game.gameSubState=='win'&&this.game.playerType=='host') || (this.game.gameSubState=='lose'&&this.game.playerType=='guest')){
+								this.ctx.drawImage(this.bmps['RESULT'], 0, 72, 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);
+							}
+							if((this.game.gameSubState=='lose'&&this.game.playerType=='host') || (this.game.gameSubState=='win'&&this.game.playerType=='guest')){
+								this.ctx.drawImage(this.bmps['RESULT'], 0, 112, 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);
+							}
+						}
 						this.drawString(126-6*(this.pushSpace.length-10)/2, window.height-20, this.pushSpace+'.'.repeat(Math.abs(this.frameCount)/30%4));
+					}
+					
+					if(this.game.disconnectTimer == true){
+						this.ctx.filter = 'none';
+						ui.drawString(window.width/2, window.height/2, 'Opponent disconnected...', 2, 'centre');
 					}
 					
 					this.fadeIn();
