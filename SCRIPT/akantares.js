@@ -63,7 +63,7 @@
 			
 			//physics
 			this.dt = 0.05; //time step for integrating motion
-			this.G = 3000; //universal gravitational constant
+			this.G = 3100; //universal gravitational constant
 			this.initCatapultSpeed = 14;
 			this.playerMass = 0.5;
 			this.planetMass = 1; //sets the unit mass scale and is thus incorporated into the definition of G as well. do not change
@@ -464,7 +464,7 @@
 							this.previousGameState = 'playing';
 						}
 						else if(this.gameMode == 2){
-							// this.playerName = window.prompt('Please enter your name: '); //annoying during testing
+							this.playerName = window.prompt('Please enter your name: '); //annoying during testing
 							this.gameState = 'lobby';
 							this.previousGameState = 'lobby';
 							socket.emit('reload event', null); //to display available hosts as soon as you enter lobby (pretend you entered and immediately hit reload)

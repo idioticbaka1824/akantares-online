@@ -188,7 +188,7 @@
 						if(document.getElementById('lobbyList').value == ''){game.lobbyString = 'Please select a host from the list';}
 						if(game.mySocketID == JSON.parse(document.getElementById('lobbyList').value).hostID){game.lobbyString = 'You cannot join your own game';}
 						if(document.getElementById('lobbyList').value != '' && game.mySocketID != JSON.parse(document.getElementById('lobbyList').value).hostID){ //something must be selected in the list, and also you cannot join your own hosted session as a guest
-							socket.emit('joining event', document.getElementById('lobbyList').value);
+							socket.emit('joining event', [document.getElementById('lobbyList').value, game.playerName]);
 							game.playerType = 'guest';
 							game.myHostID = JSON.parse(document.getElementById('lobbyList').value).hostID;
 						}
@@ -260,11 +260,11 @@ socket.on('start playing', (session) => { //this code is copied from akantares.j
 	game.resetStuff('gameover');
 	window.audioContext.resume();
 	ui.sfxs['OK'].play();
+	game.hostName = session.hostName;
+	game.guestName = session.guestName;
     game.gameState = 'playing';
 	game.gameSubState = 'ready';
 	game.previousGameState = 'playing';
-	game.hostName = session.hostName;
-	game.guestName = session.guestName;
 });
 socket.on('disconnect event', (msg) => { //this code is copied from the restart option in akantares.js (pressing 'g' on escmenu)
     game.disconnectTimer = true;

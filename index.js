@@ -58,10 +58,11 @@ io.on('connection', (socket) => {
 });
 io.on('connection', (socket) => {
 	socket.on('joining event', (value) => { //value is stringified version of a session that guest wants to join
-		let matchCheck = (obj) => JSON.stringify(obj) === value;
+		let matchCheck = (obj) => JSON.stringify(obj) === value[0];
 		let i = sessions.findIndex(matchCheck); //find where in the session list that particular session is
 		if(typeof sessions[i] !== 'undefined'){
 			sessions[i].guestID = socket.id; //and change the guestID value in it to that of the guest who wants to join
+			sessions[i].guestName = value[1];
 			console.log(sessions);
 			socket.join(sessions[i].hostID); //guest joins same room as host
 			io.emit('joining event', sessions);
