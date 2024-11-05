@@ -15,10 +15,15 @@
             padding: 0
         }
 		
-		body, select {
-			font-family: sans-serif;
+		*{
 			font-smooth: never;
 			-webkit-font-smoothing: none;
+		}
+		body {
+			font-family: sans-serif;
+		}
+		select {
+			font-family: monospace;
 		}
 		
 		#everything-container {
@@ -53,10 +58,10 @@
 		
 		#emoji-select {margin: 0.25rem; }
 		
-		#chat-container { margin-top: 1rem}
+		#chat-container {margin-top: 1rem;}
 		#chat-form {padding: 0.25rem; position: relative; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box;}
 		#chat-input {flex-grow: 1;}
-		#chat-list { background-color: #ffffff; list-style-type: none; margin: 0; padding: 0; }
+		#chat-list { background-color: #ffffff; list-style-type: none; margin: 0; padding: 0; overflow: auto; max-height: 240px;}
 		#chat-list > li { padding: 0.5rem 1rem; }
 		.host-name {color: rgb(0,128,255)}
 		.guest-name {color: rgb(231,87,0)}
@@ -76,12 +81,7 @@
 		</div>
 		<!-- <br> -->
         <canvas id="game-canvas" style='image-rendering: pixelated'></canvas>
-		<select id="lobbyList" size=6 style='visibility:hidden'></select>
-		<!-- <br><br> -->
-		<!-- <button id='zoomButton' onclick="window.keysBeingPressed['z']=true;" style='visibility:hidden'>Zoom</button> -->
-		<!-- <br> -->
-		<!-- <button id='makehost' onclick="makeHost();" style='visibility:visible'>make host</button> -->
-		<!-- <button id='checkhost' onclick="console.log(game.playerType);" style='visibility:visible'>check if host</button> -->	
+		<select id="lobbyList" size=6 style='visibility:hidden'></select>	
     </div>
 	<div id='chat-container' style='visibility:hidden'>
 			Player face:<select id="emoji-select" onchange="socket.emit('emoji event', {hostID:game.myHostID, playerType:game.playerType, value:this.value});"></select>
@@ -111,9 +111,6 @@
             gameCanvas.width = scale*width;
             gameCanvas.height = scale*height;
 			canvasContainer.style.height = gameCanvas.height + document.getElementById('fireDiv').offsetHeight; //there has to be a css way to do this???
-			<!-- if('ontouchstart' in window){ -->
-				<!-- document.getElementById('zoomButton').style.visibility = 'visible'; -->
-			<!-- } -->
             const ui = new GameUI(gameCanvas);
 			const game = new Game();
 			ui.setGame(game);
@@ -229,13 +226,13 @@ function helloClick(){socket.emit('hello event','hello world');}
 function refreshLobby(sessions){
 	let lobbyList = document.getElementById('lobbyList');
 	for(i=0; i<sessions.length; i++){
-		if(sessions[i].guestID != null){
+		<!-- if(sessions[i].guestID != null){ -->
 			lobbyList.remove(i);
-		}
+		<!-- } -->
 		if(sessions[i].guestID == null){
 			let opt = document.createElement('option');
 			opt.value = JSON.stringify(sessions[i]);
-			opt.innerHTML = sessions[i].hostName.padEnd(9, ' ') + ' - ' + sessions[i].time.slice(11,19) + ' ' + sessions[i].time.slice(0,10);
+			opt.innerHTML = sessions[i].hostName + '&nbsp'.repeat(13-sessions[i].hostName.length) + sessions[i].time.slice(11,19) + ' ' + sessions[i].time.slice(0,10);
 			lobbyList.appendChild(opt);
 		}
 	}
@@ -279,10 +276,10 @@ socket.on('emoji event', (obj) => {
 
 
 //chat feature
-//todo: make sure chat message input doesn't get picked up by the game controls (spacebar for fire, etc)!!
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const chatList = document.getElementById('chat-list');
+const chatContainer = document.getElementById('chat-container');
 
 chatForm.addEventListener('submit', (e) => {
 	e.preventDefault();
@@ -297,7 +294,7 @@ socket.on('chat event', (chatObject) => {
 	let item = document.createElement('li');
     item.innerHTML = "<b class='" + chatObject.posterType + "-name'>"+ chatObject.posterName + ":</b> " + chatObject.message;
     chatList.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    chatList.scrollTo(0, chatList.scrollHeight);
 });
 
 
@@ -316,6 +313,8 @@ socket.on('resetPlanets event', (resetPlanetsObj) => {
     console.log(resetPlanetsObj);
 	game.numPlanets = resetPlanetsObj.numPlanets;
 	game.planets = resetPlanetsObj.planets;
+	game.playerPos = resetPlanetsObj.playerPos;
+	game.enemyPos = resetPlanetsObj.enemyPos;
 });
 
 </script>

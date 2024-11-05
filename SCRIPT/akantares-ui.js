@@ -73,9 +73,10 @@ XXXX`.split('\n');
 			this.bgmURLs = {};
 			this.bgms_playing = {};
 			for(const i in this.bgm_names){
-				this.bgmURLs[this.bgm_names[i]] = new URL('https://raadshaikh.github.io/akantares-js/WAVE/BGM_'+this.bgm_names[i]+'.wav'); //why do i still need this in this server setting?
+				// this.bgmURLs[this.bgm_names[i]] = new URL('https://raadshaikh.github.io/akantares-js/WAVE/BGM_'+this.bgm_names[i]+'.wav'); //no longer needed in this server environment
+				this.bgmURLs[this.bgm_names[i]] = 'BGM_'+this.bgm_names[i]+'.wav';
 				this.bgms[this.bgm_names[i]] = new Audio();
-				this.bgms[this.bgm_names[i]].src = 'BGM_'+this.bgm_names[i]+'.wav';
+				this.bgms[this.bgm_names[i]].src = this.bgmURLs[this.bgm_names[i]];
 				this.bgms[this.bgm_names[i]].crossOrigin = 'anonymous';
 				this.bgms[this.bgm_names[i]].playing = false;
 			}
@@ -91,7 +92,8 @@ SELECT
 THREE`.split('\n');
 			this.sfxs = {};
 			for(const i in sfx_names){
-				this.sfxs[sfx_names[i]] = new Audio(new URL('https://raadshaikh.github.io/akantares-js/WAVE/PTN_'+sfx_names[i]+'.wav'));
+				// this.sfxs[sfx_names[i]] = new Audio(new URL('https://raadshaikh.github.io/akantares-js/WAVE/PTN_'+sfx_names[i]+'.wav'));
+				this.sfxs[sfx_names[i]] = new Audio('PTN_'+sfx_names[i]+'.wav');
 			}
 			this.muteSFX = {}; //so they don't play repeatedly. will reset using resetStuff in the other script.
 			
@@ -130,17 +132,21 @@ THREE`.split('\n');
             this.touchY = e.touches[0].clientY - this.canvas.getBoundingClientRect().y;
 			this.touchX /= window.scale;
 			this.touchY /= window.scale;
-			var x = this.touchX - window.width/2;
-			var y = -this.touchY + window.height/2;
-			var r = dist2(x,y);
-			window.keysBeingPressed[' '] = !(this.game.gameState=='escmenu') && !(this.touchX<32 && this.touchY<32);
+			// var x = this.touchX - window.width/2;
+			// var y = -this.touchY + window.height/2;
+			// var r = dist2(x,y);
+			window.keysBeingPressed[' '] = !(this.game.gameState=='escmenu') && !(this.touchX<32 && this.touchY<32) && !(this.touchX<32 && this.touchY>240-32) && !(this.touchX>320-32 && this.touchY<32) && !(this.touchX>320-32 && this.touchY>240-32);
 			window.keysBeingPressed['Escape'] = (this.touchX<32 && this.touchY<32);
 			window.keysBeingPressed['f'] = (this.touchX>60 && this.touchX<160 && this.touchY<100);
 			window.keysBeingPressed['g'] = (this.touchX>160 && this.touchX<240 && this.touchY<100);
 			window.keysBeingPressed['h'] = (this.touchX>240 && this.touchY<100);
+			window.keysBeingPressed['z'] = (this.touchX<32 && this.touchY>240-32);
+			window.keysBeingPressed['ArrowUp'] = (this.touchX>320-32 && this.touchY<32);
+			window.keysBeingPressed['ArrowDown'] = (this.touchX>320-32 && this.touchY>240-32);
+			this.canvas.dispatchEvent(new Event('mousedown', e.touches[0])); //simulating a click event in the lobby when on touchscreen
         }
 
-        onTouchMove(e) {
+        onTouchMove(e) { //idk if this is still needed, but im scared to get rid of it and it's not hurting
             if (this.touching) {
                 e.preventDefault();
 				window.keysBeingPressed[' '] = false;
@@ -174,6 +180,7 @@ THREE`.split('\n');
 			'f': false,
 			'g': false,
 			'k': false,
+			'z': false,
 			};
         }
         
@@ -483,10 +490,18 @@ THREE`.split('\n');
 					break;
 			}
 			
-			if(('ontouchstart' in window) && this.game.gameState!='escmenu'){
+			if('ontouchstart' in window){
 				this.ctx.globalAlpha = 0.12;
-				// this.ctx.drawImage(this.bmps['PLANET'],0,32,16,16,0,0,32,32);
-				this.drawString(8,10,'Esc');
+				this.drawString(8, window.height-16, 'Z');
+				if(this.game.gameState != 'escmenu'){
+					// this.ctx.drawImage(this.bmps['PLANET'],0,32,16,16,0,0,32,32);
+					this.drawString(8, 10, 'Esc');
+				}
+				if(this.game.gameState == 'startscreen'){
+					this.ctx.globalAlpha = 0.5;
+					this.drawString(window.width-18, 8+2*(this.frameCount%30<15), 'ģ'); //these weird characters have the right utf-16 code to use str.charCodeAt to use the up and down arrow glyphs found in bmp_font_1.png
+					this.drawString(window.width-18, window.height-16-2*(this.frameCount%30<15), 'ĥ');
+				}
 				this.ctx.globalAlpha = 1;
 			}
 			

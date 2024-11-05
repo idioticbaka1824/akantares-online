@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
 	});
 });
 io.on('connection', (socket) => {
-	socket.on('joining event', (value) => { //value is stringified version of a session that guest wants to join
+	socket.on('joining event', (value) => { //'value' is stringified version of a session that guest wants to join
 		let matchCheck = (obj) => JSON.stringify(obj) === value[0];
 		let i = sessions.findIndex(matchCheck); //find where in the session list that particular session is
 		if(typeof sessions[i] !== 'undefined'){
@@ -68,10 +68,17 @@ io.on('connection', (socket) => {
 			io.emit('joining event', sessions);
 			io.to(sessions[i].hostID).emit('start playing', sessions[i]);
 		}
+		//also, if a host joins someone else's game, their hosted session should be deleted since they're not available to host it
+		for(let i=0; i<sessions.length; i++){
+			if(sessions[i].hostID == socket.id){
+				let spliced = sessions.splice(i, 1);
+				io.emit('reload event', sessions);
+			}
+		}
 	});
 });
 
-//how to handle if host disconnects, or if guest disconnects, do i make them reload or what, what about lobby, etc.
+//how to handle if host disconnects, or if guest disconnects, do i make them reload or what, what about lobby, etc.? i think this is mostly done
 io.on('connection', (socket) => {
 	socket.on('disconnect', () => {
 		console.log('user disconnected, ' + socket.id);
@@ -107,15 +114,32 @@ io.on('connection', (socket) => {
   });
 });
 
+function playerPlanetIntersect(resetPlanetsObj){
+	let out = false;
+		for(let i=0; i<resetPlanetsObj.planets.length; i++){
+			let d = 8 + resetPlanetsObj.planets[i].m==0?8:12;
+			if( (Math.abs(resetPlanetsObj.planets[i].x-resetPlanetsObj.playerPos.x)<d && Math.abs(resetPlanetsObj.planets[i].y-resetPlanetsObj.playerPos.y)<d) || (Math.abs(resetPlanetsObj.planets[i].x-resetPlanetsObj.enemyPos.x)<d && Math.abs(resetPlanetsObj.planets[i].y-resetPlanetsObj.enemyPos.y)<d) ){
+				out = true;
+			}
+		}
+	return out;
+}
+
 //after a hitting shot when the planets are redrawn
-//todo!! this code is copied from the offline case in akantares.js. i need to add player repositioning code both there and here
 io.on('connection', (socket) => {
   socket.on('resetPlanets event', (obj) => {
-	let resetPlanetsObj = {numPlanets:0, planets:[]};
+	let resetPlanetsObj = {playerPos:{h:false}, enemyPos:{h:false}, numPlanets:0, planets:[]};
 	resetPlanetsObj.numPlanets = 1+Math.floor(4*Math.random());
 	for(let i=0; i<resetPlanetsObj.numPlanets; i++){
-		resetPlanetsObj.planets[i] = {x:60+160*Math.random(), y:12+200*Math.random(), m:(Math.random()<0.3), h:0};
+		resetPlanetsObj.planets[i] = {x:30+260*Math.random(), y:20+200*Math.random(), m:(Math.random()<0.3), h:0};
 	}
+	do{
+		resetPlanetsObj.playerPos.x = 25 + Math.floor(65*Math.random());
+		resetPlanetsObj.enemyPos.x = 320-25 - Math.floor(65*Math.random());
+		resetPlanetsObj.playerPos.y = 20 + Math.floor(200*Math.random());
+		resetPlanetsObj.enemyPos.y = 20 + Math.floor(200*Math.random());
+	}
+	while(playerPlanetIntersect(resetPlanetsObj));
     console.log('resetPlanets event: ' + resetPlanetsObj);
 	io.to(obj.hostID).emit('resetPlanets event', resetPlanetsObj);
   });

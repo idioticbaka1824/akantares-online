@@ -63,12 +63,12 @@
 			
 			//physics
 			this.dt = 0.05; //time step for integrating motion
-			this.G = 3100; //universal gravitational constant
-			this.initCatapultSpeed = 14;
-			this.playerMass = 0.5;
+			this.G = 3300; //universal gravitational constant
+			this.initCatapultSpeed = 18;
+			this.playerMass = 0.2;
 			this.planetMass = 1; //sets the unit mass scale and is thus incorporated into the definition of G as well. do not change
 			this.bigPlanetMass = 2;
-			this.respiteFrames = 30; //# of frames at beginning when player gravity is disabled
+			this.respiteFrames = 10; //# of frames at beginning when player gravity is disabled
 			this.fadeinDuration = 0.2;
 			this.resumeFrame = 0; //keep track of which frame you were on when paused, so that the game doesn't keep going in the background
 			
@@ -96,6 +96,17 @@
 			this.debugInvulnerability = false;
 		}
 		
+		playerPlanetIntersect(){
+			let out = false;
+			for(let i=0; i<this.planets.length; i++){
+				let d = 8 + this.planets[i].m==0?8:12;
+				if( (Math.abs(this.planets[i].x-this.playerPos.x)<d && Math.abs(this.planets[i].y-this.playerPos.y)<d) || (Math.abs(this.planets[i].x-this.enemyPos.x)<d && Math.abs(this.planets[i].y-this.enemyPos.y)<d) ){
+					out = true;
+				}
+			}
+			return out;
+		}
+		
 		fire(arg='emit'){
 			if(this.gameMode!=2 || !this.justStartedPlaying){ //otherwise firing will cause the nameplates to re-popup (nameplates only used in online mode)
 				ui.sfxs['OK'].play();
@@ -105,7 +116,6 @@
 					document.getElementById('fireButton').disabled = true;
 					ui.frameCount = 0;
 				}
-				if(this.gameMode==1){this.whoseTurn = this.whoseTurn + 1;	ui.frameCount = 0;}
 				if(this.gameMode == 2 && arg=='emit'){
 					if(this.playerType == 'host'){this.hostFired = true;}
 					if(this.playerType == 'guest'){this.guestFired = true;}
@@ -117,13 +127,14 @@
 					ui.frameCount = 0;
 				}
 				
-				if(this.gameMode==0 || this.whoseTurn>0 || (this.hostFired&&this.guestFired)){
+				if(this.gameMode==0 || (this.gameMode==1 && this.whoseTurn>0) || (this.hostFired&&this.guestFired)){
 					this.resultString = '';
 					this.resetStuff('trail');
 					this.resetStuff('shot');
 					this.gameSubState = 'countdown';
 					ui.frameCount = 0;
 				}
+				if(this.gameMode==1){this.whoseTurn = this.whoseTurn + 1;	ui.frameCount = 0;}
 			}
 		}
 		
@@ -135,14 +146,21 @@
 					this.enemyTrail = [];
 					break;
 					
-				case 'planets': //todo!!: put in some code here that resets the players' positions too
+				case 'planets':
 					this.resetStuff('trail');
 					this.planets = [];
 					if(this.gameMode != 2){
 						this.numPlanets = 1+Math.floor(4*Math.random());
 						for(let i=0; i<this.numPlanets; i++){
-							this.planets[i] = {x:60+160*Math.random(), y:12+200*Math.random(), m:(Math.random()<0.3), h:0};
+							this.planets[i] = {x:30+260*Math.random(), y:20+200*Math.random(), m:(Math.random()<0.3), h:0};
 						}
+						do{
+							this.playerPos.x = 25 + Math.floor(65*Math.random());
+							this.enemyPos.x = 320-25 - Math.floor(65*Math.random());
+							this.playerPos.y = 20 + Math.floor(200*Math.random());
+							this.enemyPos.y = 20 + Math.floor(200*Math.random());
+						}
+						while(this.playerPlanetIntersect());
 					}
 					if(this.gameMode == 2 && typeof socket !=='undefined'){socket.emit('resetPlanets event', {hostID:this.myHostID});}
 					break;
@@ -420,6 +438,7 @@
 				let newLobbyListStyle = window.scale==2 ? 'position:absolute; font-size:26px; left:46px; top:244px; width:362px; height:180px' : 'position:absolute; font-size:13px; left:23px; top:138px; width:181px; height:90px';
 				newLobbyListStyle = 'visibility:' + (this.gameState=='lobby'?'visible':'hidden') + '; ' + newLobbyListStyle;
 				lobbyList.style = newLobbyListStyle;
+				document.getElementById('chat-list').style.height = gameCanvas.height;
 				
 				ekeys['z'] = false;
 			}
@@ -464,7 +483,9 @@
 							this.previousGameState = 'playing';
 						}
 						else if(this.gameMode == 2){
-							this.playerName = window.prompt('Please enter your name: '); //annoying during testing
+							let input = null;
+							do{input = window.prompt('Please enter your name: ');} while(input == null || input == "" ); //make sure they enter some or the other name
+							this.playerName = input.substring(0,12); //names are capped at 12 characters to fit in the column in the lobby
 							this.gameState = 'lobby';
 							this.previousGameState = 'lobby';
 							socket.emit('reload event', null); //to display available hosts as soon as you enter lobby (pretend you entered and immediately hit reload)
