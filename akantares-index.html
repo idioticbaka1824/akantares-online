@@ -119,6 +119,10 @@
 			if ("ontouchstart" in window) {
 				document.getElementById('lobbyList').style.outline = 'dashed';
 			}
+			
+			window.onkeydown = function(e) { //pressing space/up/down was scrolling the page. this code avoids that, and is called 'eating the key'
+				return (e.key !== ' ' && e.keyCode !== 32) && (e.key !== 'ArrowDown' && e.keyCode !== 40) && (e.key !== 'ArrowUp' && e.keyCode !== 38);
+			}
 
 			window.keysBeingPressed = {
 			'ArrowLeft': false,

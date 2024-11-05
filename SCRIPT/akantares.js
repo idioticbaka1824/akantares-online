@@ -227,6 +227,7 @@
 				case 'playing':
 					
 					if(document.getElementById('fireDiv').style.visibility=='hidden'){document.getElementById('fireDiv').style.visibility='visible';}
+					if(document.getElementById('fireDiv').style.opacity==0){document.getElementById('fireDiv').style.opacity=1;}
 					if(this.gameMode==2){
 						document.getElementById('chat-container').style.visibility = 'visible';
 						document.getElementById('lobbyList').style.visibility = 'hidden';
@@ -530,12 +531,13 @@
 						}
 					}
 					
-					if(this.gameSubState == 'win' || this.gameSubState == 'loss' || this.gameSubState =='draw'){
+					if(this.gameSubState == 'win' || this.gameSubState == 'lose' || this.gameSubState =='draw'){
 						if(ekeys[' ']){
 							this.resetStuff('gameover');
 							this.gameState = 'playing';
 							this.gameSubState = 'ready';
 							this.previousGameState = 'playing';
+							document.getElementById('fireRange').style.visibility = 'visible';
 							ekeys[' '] = false;
 							this.readyFadeIn();
 						}
@@ -563,6 +565,9 @@
 						window.audioContext.resume();
 						this.gameState = 'loading';
 						this.previousGameState = 'loading';
+						document.getElementById('fireRange').style.visibility = 'visible';
+						document.getElementById('fireButton').disabled = false;
+						document.getElementById('fireDiv').style.opacity = 0;
 						this.readyFadeIn;
 					}
 					if(ekeys['h']){
