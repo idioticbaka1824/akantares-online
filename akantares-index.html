@@ -269,7 +269,7 @@ socket.on('disconnect event', (msg) => { //this code is copied from the restart 
 });
 
 socket.on('emoji event', (obj) => {
-    console.log(obj);
+    <!-- console.log(obj); -->
 	if(obj.playerType == 'host'){game.hostEmoji = obj.value;}
 	if(obj.playerType == 'guest'){game.guestEmoji = obj.value;}
 });
@@ -290,7 +290,7 @@ chatForm.addEventListener('submit', (e) => {
 });
 
 socket.on('chat event', (chatObject) => {
-    console.log(chatObject);
+    <!-- console.log(chatObject); -->
 	let item = document.createElement('li');
     item.innerHTML = "<b class='" + chatObject.posterType + "-name'>"+ chatObject.posterName + ":</b> " + chatObject.message;
     chatList.appendChild(item);
@@ -300,7 +300,7 @@ socket.on('chat event', (chatObject) => {
 
 //firing events
 socket.on('fire event', (fireObject) => {
-    console.log(fireObject);
+    <!-- console.log(fireObject); -->
 	game.hostFired = fireObject.hostFired;
 	game.guestFired = fireObject.guestFired;
 	if(fireObject.hostAngle!=null && game.playerType=='guest'){game.playerAngle = fireObject.hostAngle;}
@@ -310,7 +310,7 @@ socket.on('fire event', (fireObject) => {
 
 //resetting planets after a shot
 socket.on('resetPlanets event', (resetPlanetsObj) => {
-    console.log(resetPlanetsObj);
+    <!-- console.log(resetPlanetsObj); -->
 	game.numPlanets = resetPlanetsObj.numPlanets;
 	game.planets = resetPlanetsObj.planets;
 	game.playerPos = resetPlanetsObj.playerPos;

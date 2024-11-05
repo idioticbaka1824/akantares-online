@@ -28,11 +28,11 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-	console.log('a user connected, ' + socket.id);
+	// console.log('a user connected, ' + socket.id);
 });
 
 server.listen(3000, () => {
-  console.log('server running at http://localhost:3000');
+  console.log('server running at port 3000');
 });
 
 io.on('connection', (socket) => {
@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
 	socket.on('hosting event', (session) => {
 		session.hostID = socket.id; //client doesn't know what the server identifies it as, so when the session object was sent the hostID was still null and is now updated here
 		sessions.push(session);
-		console.log(sessions);
+		// console.log(sessions);
 		socket.join(session.hostID); //the name given to the socket.io room is just the host id
 		io.emit('hosting event', sessions);
 	});
@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
 		if(typeof sessions[i] !== 'undefined'){
 			sessions[i].guestID = socket.id; //and change the guestID value in it to that of the guest who wants to join
 			sessions[i].guestName = value[1];
-			console.log(sessions);
+			// console.log(sessions);
 			socket.join(sessions[i].hostID); //guest joins same room as host
 			io.emit('joining event', sessions);
 			io.to(sessions[i].hostID).emit('start playing', sessions[i]);
@@ -81,7 +81,7 @@ io.on('connection', (socket) => {
 //how to handle if host disconnects, or if guest disconnects, do i make them reload or what, what about lobby, etc.? i think this is mostly done
 io.on('connection', (socket) => {
 	socket.on('disconnect', () => {
-		console.log('user disconnected, ' + socket.id);
+		// console.log('user disconnected, ' + socket.id);
 		for(i=0; i<sessions.length; i++){
 			if(sessions[i].hostID==socket.id || sessions[i].guestID==socket.id){
 				io.to(sessions[i].hostID).emit('disconnect event', null); //let the host and guest know that one of them disconnected so they get sent back to the lobby
@@ -101,7 +101,7 @@ io.on('connection', (socket) => {
 //chat feature
 io.on('connection', (socket) => {
   socket.on('chat event', (chatObject) => { //chatObject looks like this: {posterType:game.playerType, posterName:game.playerName, hostID:game.myHostID, message:chatInput.value}
-    console.log(chatObject.posterType + ' of room ' + chatObject.hostID + ' said: ' + chatObject.message);
+    // console.log(chatObject.posterType + ' of room ' + chatObject.hostID + ' said: ' + chatObject.message);
 	io.to(chatObject.hostID).emit('chat event', chatObject);
   });
 });
@@ -109,7 +109,7 @@ io.on('connection', (socket) => {
 //what happens when you hit the fire button
 io.on('connection', (socket) => {
   socket.on('fire event', (fireObject) => {
-    console.log('fire event: ' + fireObject);
+    // console.log('fire event: ' + fireObject);
 	io.to(fireObject.hostID).emit('fire event', fireObject);
   });
 });
@@ -140,7 +140,7 @@ io.on('connection', (socket) => {
 		resetPlanetsObj.enemyPos.y = 20 + Math.floor(200*Math.random());
 	}
 	while(playerPlanetIntersect(resetPlanetsObj));
-    console.log('resetPlanets event: ' + resetPlanetsObj);
+    // console.log('resetPlanets event: ' + resetPlanetsObj);
 	io.to(obj.hostID).emit('resetPlanets event', resetPlanetsObj);
   });
 });
