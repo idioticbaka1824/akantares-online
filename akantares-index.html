@@ -115,6 +115,10 @@
 			const game = new Game();
 			ui.setGame(game);
 			setInterval(game.update.bind(game), 1000/fps);
+			
+			if ("ontouchstart" in window) {
+				document.getElementById('lobbyList').style.outline = 'dashed';
+			}
 
 			window.keysBeingPressed = {
 			'ArrowLeft': false,
@@ -159,6 +163,9 @@
 				if (document.visibilityState != 'visible') {
 					window.audioContext.suspend();
 					if(game.gameMode!=2){game.gameState = 'escmenu';} //no pausing in online games
+				}
+				if (document.visibilityState == 'visible') {
+					window.audioContext.resume();
 				}
 			});
 			
