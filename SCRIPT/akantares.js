@@ -170,6 +170,8 @@
 					this.resetStuff('trail');
 					this.resetStuff('planets');
 					this.resetStuff('shot');
+					this.hostEmoji = 0;
+					this.guestEmoji = 0;
 					this.justStartedPlaying = true;
 					break;
 				
