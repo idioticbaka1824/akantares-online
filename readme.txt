@@ -24,7 +24,7 @@ You are the blue planet. You play against the computer (which for now just picks
 You take turns playing against an opponent. Both you and your opponent use the same controls. Blue aims and presses fire, then red aims and presses fire, after that the shot is actually 'carried out'.
 
 ~~Online multiplayer:
-Initially a Lobby is displayed with a list of players hosting games.
+Initially a Lobby is displayed with a list of players hosting games. On mobile devices you may have to press a little downward arrow on the right side of the white field to see the list.
 You can host a game by pressing the 'Host' button, and your name and the time is added to the list.
 You can join someone's game by selecting their name/time from the list and clicking the 'Join' button. Once a hosted game is joined, it is removed from the lobby and the players (host and guest) are transferred to the actual gameplay screen to start playing it.
 The shot is carried out once both players have made their move (and they may do so in any order).
