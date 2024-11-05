@@ -33,6 +33,7 @@ There is also a chat function. You can also choose a funny face for your player 
 
 ~~Issues:
 Pressing space scrolls you down the page.
+The firing controls stay visible at times they shouldn't be if you restart the game.
 Physics isn't an exact copy of the original game.
 
 
