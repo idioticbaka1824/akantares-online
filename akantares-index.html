@@ -121,7 +121,8 @@
 			}
 			
 			window.onkeydown = function(e) { //pressing space/up/down was scrolling the page. this code avoids that, and is called 'eating the key'
-				return (e.key !== ' ' && e.keyCode !== 32) && (e.key !== 'ArrowDown' && e.keyCode !== 40) && (e.key !== 'ArrowUp' && e.keyCode !== 38);
+				if(document.getElementById('chat-input') === document.activeElement){return true;} //you do want spacebar input to work when typing in chat
+				else {return (e.key !== ' ' && e.keyCode !== 32) && (e.key !== 'ArrowDown' && e.keyCode !== 40) && (e.key !== 'ArrowUp' && e.keyCode !== 38);}
 			}
 
 			window.keysBeingPressed = {
@@ -178,7 +179,7 @@
 			}
 			document.addEventListener('orientationchange', resizeSlider());
 			
-			const emojis = ['🟡','😄','🤨','😥','😌','😑','🤪','😐','😰','😃','😱','😎','😒','😡','😏','😐'];
+			const emojis = ['🟡','😄','🤨','😥','😌','😑','🤪','😐','😰','😃','😱','😎','😒','😡','😏','😒'];
 			for(let i=0; i<emojis.length; i++){
 				let opt = document.createElement('option');
 				opt.value = i;
@@ -283,6 +284,8 @@ socket.on('emoji event', (obj) => {
     <!-- console.log(obj); -->
 	if(obj.playerType == 'host'){game.hostEmoji = obj.value;}
 	if(obj.playerType == 'guest'){game.guestEmoji = obj.value;}
+	document.getElementById('emoji-select').blur();
+	gameCanvas.focus();
 });
 
 

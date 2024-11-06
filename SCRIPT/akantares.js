@@ -99,7 +99,7 @@
 		playerPlanetIntersect(){
 			let out = false;
 			for(let i=0; i<this.planets.length; i++){
-				let d = 8 + this.planets[i].m==0?8:12;
+				let d = 4 + 8 + this.planets[i].m==0?8:12;
 				if( (Math.abs(this.planets[i].x-this.playerPos.x)<d && Math.abs(this.planets[i].y-this.playerPos.y)<d) || (Math.abs(this.planets[i].x-this.enemyPos.x)<d && Math.abs(this.planets[i].y-this.enemyPos.y)<d) ){
 					out = true;
 				}
