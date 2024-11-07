@@ -55,7 +55,10 @@ STARTSCREEN
 THREE
 TITLE
 WINMARK
-LOBBY`.split('\n');
+LOBBY
+INSTRUCTION_1
+INSTRUCTION_2
+INSTRUCTION_3`.split('\n');
 			for (const i in bmp_names){
 				this.bmps[bmp_names[i]] = new Image();
 				this.bmps[bmp_names[i]].src = "BMP_"+bmp_names[i]+".png";
@@ -285,9 +288,10 @@ THREE`.split('\n');
 					this.ctx.drawImage(this.bmps['PLANET'],0,16,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount+Math.PI)-16/2, window.height/2-16+68*Math.sin(-0.01*this.frameCount+Math.PI)-16/2, 16,16);
 					// this.drawString(126-6*(this.pushSpace.length-10)/2, window.height-24, this.pushSpace+'.'.repeat(Math.abs(this.frameCount)/30%4));
 					this.selectString = this.frameCount%20<10==0 ? '> ' : '- ';
-					this.drawString(window.width/2, window.height-36, (this.game.gameMode==0?this.selectString:'')+'Single Player', 1,'centre');
-					this.drawString(window.width/2, window.height-24, (this.game.gameMode==1?this.selectString:'')+'Multiplayer (Offline)', 1,'centre');
-					this.drawString(window.width/2, window.height-12, (this.game.gameMode==2?this.selectString:'')+'Multiplayer (Online)', 1,'centre');
+					this.drawString(window.width/2, window.height-48, (this.game.gameMode==0?this.selectString:'')+'Single Player', 1,'centre');
+					this.drawString(window.width/2, window.height-36, (this.game.gameMode==1?this.selectString:'')+'Multiplayer (Offline)', 1,'centre');
+					this.drawString(window.width/2, window.height-24, (this.game.gameMode==2?this.selectString:'')+'Multiplayer (Online)', 1,'centre');
+					this.drawString(window.width/2, window.height-12, (this.game.gameMode==3?this.selectString:'')+'Instructions', 1,'centre');
 					break;
 					
 				
@@ -316,7 +320,12 @@ THREE`.split('\n');
 				
 				
 				case 'playing':
-					
+				
+					if(this.game.gameMode == 3){
+						this.ctx.drawImage(this.bmps['INSTRUCTION_'+this.game.gameSubState.toString()], 0, 0, 320, 240, 0, 0, 320, 240);
+						break;
+					}
+					else{
 					if(this.game.disconnectTimer == true){this.ctx.filter = 'brightness(50%)';}
 					
 					for (let i=0; i<5; i++){
@@ -458,6 +467,7 @@ THREE`.split('\n');
 						this.ctx.filter = 'none';
 						ui.drawString(window.width/2, window.height/2, 'Opponent disconnected...', 2, 'centre');
 					}
+					}//this end brace is for the 'if gameMode!=3' else block that i didnt bother indenting
 					
 					this.fadeIn();
 					

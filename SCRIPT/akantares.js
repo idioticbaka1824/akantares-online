@@ -31,15 +31,16 @@
 	
     class Game {
         constructor() {
-			this.gameMode = 2; //0,1,2 = singleplayer, multiplayer offline, multiplayer online
-			this.numGameModes = 3;
+			this.gameMode = 2; //0,1,2 = singleplayer, multiplayer offline, multiplayer online, instructions screen
+			this.numGameModes = 4;
 			this.whoseTurn = 0; //0,1 = player1 or player2 (during 2player offline)
-			this.gameState = 'loading'; //loading, startscreen, playing, escmenu, gameover. actually, no startscreen or gameover
-			this.gameSubState = 'null'; //if gameState == 'playing', this can be 'ready', 'countdown', 'flying', 'collided', 'win','lose','draw'. otherwise it is 'null'.
+			this.gameState = 'loading'; //loading, startscreen, playing, escmenu, gameover. actually, no gameover.
+			this.gameSubState = 'null'; //if gameState == 'playing', this can be 'ready', 'countdown', 'flying', 'collided', 'win','lose','draw'. otherwise it is 'null'. //update: for gameMode=3 this can be 1 or 2 for instruction pages
 			this.level = 0;
 			this.help = false;
 			this.previousGameState = 'loading';
 			this.keyHasBeenPressed = {horizontal:0, vertical:0};
+			this.numInstructions = 3;
 			
 			//stuff needed for online 2player
 			this.playerType = 'guest';
@@ -249,6 +250,11 @@
 					}
 										
 					switch(this.gameSubState){
+						
+						case 1:
+							break;
+						case 2:
+							break;
 						
 						case 'ready':
 							if((game.gameMode==0) || (game.gameMode==1 && game.whoseTurn==0) || (game.gameMode==2 && game.playerType=='host' && this.disabled==false)){this.playerAngle = document.getElementById('fireRange').value;} //using 'game.' instead of 'this.' for some conditions because they were copied over from the html file. it still seems to work so never mind
@@ -482,7 +488,7 @@
 						ui.sfxs['OK'].play();
 						if(this.gameMode != 2){
 							this.gameState = 'playing';
-							this.gameSubState = 'ready';
+							this.gameSubState = this.gameMode!=3 ? 'ready' : 1;
 							this.previousGameState = 'playing';
 						}
 						else if(this.gameMode == 2){
@@ -539,6 +545,23 @@
 							this.previousGameState = 'playing';
 							document.getElementById('fireRange').style.visibility = 'visible';
 							ekeys[' '] = false;
+							this.readyFadeIn();
+						}
+					}
+					
+					if(this.gameMode==3 && this.gameSubState<this.numInstructions){
+						if(ekeys[' ']){
+							this.gameSubState++;
+							ekeys[' '] = false;
+							this.readyFadeIn();
+						}
+					}
+					if(this.gameSubState == this.numInstructions){
+						if(ekeys[' ']){
+							this.gameState = 'startscreen';
+							this.previousGameState = 'startscreen';
+							ekeys[' '] = false;
+							document.getElementById('fireDiv').style.opacity = 0;
 							this.readyFadeIn();
 						}
 					}
