@@ -268,24 +268,24 @@ THREE`.split('\n');
 					}
 					this.fadeIn();
 					// this.ctx.drawImage(this.bmps['STARTSCREEN'], 0,0,320,240, 0,0,320,240); //old boring title screen graphic
-					this.drawString(52,80,'AKANTARES',4);
-					this.ctx.drawImage(this.bmps['TITLE'], 8, 32, 112, 8, 100, 128, 112, 8);
+					this.drawString(52,66,'AKANTARES',4);
+					this.ctx.drawImage(this.bmps['TITLE'], 8, 32, 112, 8, 100, 114, 112, 8);
 					//UBER COOL-LOOKING ANIMATION THINGY!!!
 					if(this.startscreenAnim == 0){
 						for(let i=0; i<10; i++){
-							this.ctx.drawImage(this.bmps['PLANET'],43,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-i*20)), window.height/2-16+68*Math.sin(-0.01*(this.frameCount-i*20)), 1,1);
-							this.ctx.drawImage(this.bmps['PLANET'],59,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-i*20)+Math.PI), window.height/2-16+68*Math.sin(-0.01*(this.frameCount-i*20)+Math.PI), 1,1);
+							this.ctx.drawImage(this.bmps['PLANET'],43,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-i*20)), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-i*20)), 1,1);
+							this.ctx.drawImage(this.bmps['PLANET'],59,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-i*20)+Math.PI), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-i*20)+Math.PI), 1,1);
 						}
 					}
 					//alternate animation
 					else{
 						for(let i=0; i<16; i++){
-							this.ctx.drawImage(this.bmps['PLANET'],43,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-this.frameCount%20-i*20)), window.height/2-16+68*Math.sin(-0.01*(this.frameCount-this.frameCount%20-i*20)), 1,1);
-							this.ctx.drawImage(this.bmps['PLANET'],59,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-this.frameCount%20-i*20)+Math.PI), window.height/2-16+68*Math.sin(-0.01*(this.frameCount-this.frameCount%20-i*20)+Math.PI), 1,1);
+							this.ctx.drawImage(this.bmps['PLANET'],43,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-this.frameCount%20-i*20)), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-this.frameCount%20-i*20)), 1,1);
+							this.ctx.drawImage(this.bmps['PLANET'],59,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-this.frameCount%20-i*20)+Math.PI), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-this.frameCount%20-i*20)+Math.PI), 1,1);
 						}
 					}
-					this.ctx.drawImage(this.bmps['PLANET'],0,0,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount)-16/2, window.height/2-16+68*Math.sin(-0.01*this.frameCount)-16/2, 16,16);
-					this.ctx.drawImage(this.bmps['PLANET'],0,16,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount+Math.PI)-16/2, window.height/2-16+68*Math.sin(-0.01*this.frameCount+Math.PI)-16/2, 16,16);
+					this.ctx.drawImage(this.bmps['PLANET'],0,0,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount)-16/2, window.height/2-28+68*Math.sin(-0.01*this.frameCount)-16/2, 16,16);
+					this.ctx.drawImage(this.bmps['PLANET'],0,16,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount+Math.PI)-16/2, window.height/2-28+68*Math.sin(-0.01*this.frameCount+Math.PI)-16/2, 16,16);
 					// this.drawString(126-6*(this.pushSpace.length-10)/2, window.height-24, this.pushSpace+'.'.repeat(Math.abs(this.frameCount)/30%4));
 					this.selectString = this.frameCount%20<10==0 ? '> ' : '- ';
 					this.drawString(window.width/2, window.height-48, (this.game.gameMode==0?this.selectString:'')+'Single Player', 1,'centre');
@@ -452,6 +452,8 @@ THREE`.split('\n');
 							if(this.game.gameSubState=='win'){this.drawString(window.width/2, window.height/2, 'Player 1 win!', 2, 'centre');}
 							if(this.game.gameSubState=='lose'){this.drawString(window.width/2, window.height/2, 'Player 2 win!', 2, 'centre');}
 						}
+						if(this.game.gameMode != 2){this.drawString(126-6*(this.pushSpace.length-10)/2, window.height-20, this.pushSpace+'.'.repeat(Math.abs(this.frameCount)/30%4));}
+						
 						if(this.game.gameMode==2){ //2player online mode. 'win' and 'lose' means host win or guest win respectively.
 							if((this.game.gameSubState=='win'&&this.game.playerType=='host') || (this.game.gameSubState=='lose'&&this.game.playerType=='guest')){
 								this.ctx.drawImage(this.bmps['RESULT'], 0, 72, 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);
@@ -459,8 +461,14 @@ THREE`.split('\n');
 							if((this.game.gameSubState=='lose'&&this.game.playerType=='host') || (this.game.gameSubState=='win'&&this.game.playerType=='guest')){
 								this.ctx.drawImage(this.bmps['RESULT'], 0, 112, 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);
 							}
+							this.selectString = this.frameCount%20<10==0 ? '> ' : '- '; //copied from the title screen
+							this.drawString(window.width/2, window.height-48, 'Rematch?', 1, 'centre');
+							this.drawString(window.width/2, window.height-36, (this.game.rematchChoice==1?this.selectString:'')+'Yes', 1,'centre');
+							this.drawString(window.width/2, window.height-24, (this.game.rematchChoice==0?this.selectString:'')+'No', 1,'centre');
+							if(this.game.rematchChoiceMade==1 && this.game.rematch[this.game.playerType=='host'?'guest':'host'] == null){ //if you want to rematch but opponent is yet undecided
+								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Waiting for opponent'+'.'.repeat(Math.abs(this.frameCount)/30%4));
+							}
 						}
-						this.drawString(126-6*(this.pushSpace.length-10)/2, window.height-20, this.pushSpace+'.'.repeat(Math.abs(this.frameCount)/30%4));
 					}
 					
 					if(this.game.disconnectTimer == true){
@@ -507,7 +515,7 @@ THREE`.split('\n');
 					// this.ctx.drawImage(this.bmps['PLANET'],0,32,16,16,0,0,32,32);
 					this.drawString(8, 10, 'Esc');
 				}
-				if(this.game.gameState == 'startscreen'){
+				if(this.game.gameState=='startscreen' || (this.game.gameMode==2 && ['win', 'lose', 'draw'].includes(this.game.gameSubState))){
 					this.ctx.globalAlpha = 0.5;
 					this.drawString(window.width-18, 8+2*(this.frameCount%30<15), 'ģ'); //these weird characters have the right utf-16 code to use str.charCodeAt to use the up and down arrow glyphs found in bmp_font_1.png
 					this.drawString(window.width-18, window.height-16-2*(this.frameCount%30<15), 'ĥ');

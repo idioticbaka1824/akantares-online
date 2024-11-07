@@ -213,7 +213,7 @@
 						}
 					}
 					if(x>226 && x<226+76 && y>206 && y<206+22){ //quit
-						ui.frameCount = 0;
+						ui.frameCount = 0; //copied from restart game code
 						ui.stop_bgm();
 						window.audioContext.resume();
 						game.gameState = 'startscreen';
@@ -329,6 +329,30 @@ socket.on('resetPlanets event', (resetPlanetsObj) => {
 	game.planets = resetPlanetsObj.planets;
 	game.playerPos = resetPlanetsObj.playerPos;
 	game.enemyPos = resetPlanetsObj.enemyPos;
+});
+
+//handling rematch choice from opponent
+socket.on('rematch event', (rematchObj) => {
+	game.rematch[rematchObj.playerType] = rematchObj.msg;
+	<!-- if(rematchObj.playerType != game.playerType){ -->
+		if(game.rematch['host']&&game.rematch['guest'] == 0){ //if opponent refuses
+			ui.frameCount = 0; //copied from restart game code
+			ui.stop_bgm();
+			window.audioContext.resume();
+			game.gameState = 'startscreen';
+			game.previousGameState = 'startscreen';
+			game.readyFadeIn();
+			document.getElementById('lobbyList').style.visibility = 'hidden';
+		}
+		if(game.rematch['host']&&game.rematch['guest'] == 1){ //if opponent agrees to rematch
+			game.resetStuff('gameover'); //copied from start over event code
+			window.audioContext.resume();
+			ui.sfxs['OK'].play();
+			game.gameState = 'playing';
+			game.gameSubState = 'ready';
+			game.previousGameState = 'playing';
+		}
+	<!-- } -->
 });
 
 </script>

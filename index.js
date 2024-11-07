@@ -3,6 +3,8 @@ const { createServer } = require('node:http');
 const { join } = require('node:path');
 const { Server } = require('socket.io');
 
+require('events').EventEmitter.defaultMaxListeners = 15; //more than 10 makes it think there's a memory leak. idk if there really is?
+
 const app = express();
 const server = createServer(app);
 // const io = new Server(server);
@@ -142,5 +144,12 @@ io.on('connection', (socket) => {
 	while(playerPlanetIntersect(resetPlanetsObj));
     // console.log('resetPlanets event: ' + resetPlanetsObj);
 	io.to(obj.hostID).emit('resetPlanets event', resetPlanetsObj);
+  });
+});
+
+//what to do when asking for a rematch
+io.on('connection', (socket) => {
+  socket.on('rematch event', (rematchObject) => {
+	io.to(rematchObject.hostID).emit('rematch event', rematchObject);
   });
 });

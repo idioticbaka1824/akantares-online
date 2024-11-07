@@ -57,6 +57,9 @@
 			this.hostEmoji = 0;
 			this.guestEmoji = 0;
 			this.disconnectTimer = false; //there has to be a better way for this but eh
+			this.rematch = {'host':null, 'guest':null};
+			this.rematchChoice = 1;
+			this.rematchChoiceMade = null;
 			
 			//misc
 			this.score = [0,0];
@@ -509,6 +512,11 @@
 					break;
 				
 				case 'playing':
+				
+					if(ekeys['k']){ //debug cheat, remove when finished!!
+						this.score[0]++;
+						ekeys['k'] = false;
+					}
 					
 					if(this.gameSubState == 'ready'){
 						if(ekeys['ArrowLeft']){
@@ -539,18 +547,45 @@
 					
 					if(this.gameSubState == 'win' || this.gameSubState == 'lose' || this.gameSubState =='draw'){
 						if(ekeys[' ']){
-							this.resetStuff('gameover');
-							this.gameState = 'playing';
-							this.gameSubState = 'ready';
-							this.previousGameState = 'playing';
-							document.getElementById('fireRange').style.visibility = 'visible';
+							ui.sfxs['OK'].play();
+							if(this.gameMode != 2){
+								this.resetStuff('gameover');
+								this.gameState = 'playing';
+								this.gameSubState = 'ready';
+								this.previousGameState = 'playing';
+								document.getElementById('fireRange').style.visibility = 'visible';
+								this.readyFadeIn();
+							}
+							if(this.gameMode == 2){
+								ui.frameCount = 0;
+								this.rematchChoiceMade = this.rematchChoice;
+								this.rematch[this.playerType] = this.rematchChoiceMade;
+								socket.emit('rematch event', {hostID:this.myHostID, playerType:this.playerType, msg:this.rematchChoiceMade});
+								if(this.rematchChoice == 0){ //copied from restart game code. if we choose not to rematch, we basically disconnect and reset to title screen
+									socket.disconnect();
+									ui.stop_bgm();
+									window.audioContext.resume();
+									this.gameState = 'startscreen';
+									this.previousGameState = 'startscreen';
+								}
+							}
 							ekeys[' '] = false;
-							this.readyFadeIn();
+						}
+						if(ekeys['ArrowUp'] && this.rematchChoiceMade==null){
+							this.rematchChoice = 1-this.rematchChoice;
+							ui.sfxs['SELECT'].play();
+							ekeys['ArrowUp'] = false;
+						}
+						if(ekeys['ArrowDown'] && this.rematchChoiceMade==null){
+							this.rematchChoice = 1-this.rematchChoice;
+							ui.sfxs['SELECT'].play();
+							ekeys['ArrowDown'] = false;
 						}
 					}
 					
 					if(this.gameMode==3 && this.gameSubState<this.numInstructions){
 						if(ekeys[' ']){
+							ui.sfxs['OK'].play();
 							this.gameSubState++;
 							ekeys[' '] = false;
 							this.readyFadeIn();
@@ -558,6 +593,7 @@
 					}
 					if(this.gameSubState == this.numInstructions){
 						if(ekeys[' ']){
+							ui.sfxs['OK'].play();
 							this.gameState = 'startscreen';
 							this.previousGameState = 'startscreen';
 							ekeys[' '] = false;
