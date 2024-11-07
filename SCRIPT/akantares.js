@@ -513,10 +513,10 @@
 				
 				case 'playing':
 				
-					if(ekeys['k']){ //debug cheat, remove when finished!!
-						this.score[0]++;
-						ekeys['k'] = false;
-					}
+					// if(ekeys['k']){ //debug cheat, remove when finished!!
+						// this.score[0]++;
+						// ekeys['k'] = false;
+					// }
 					
 					if(this.gameSubState == 'ready'){
 						if(ekeys['ArrowLeft']){
