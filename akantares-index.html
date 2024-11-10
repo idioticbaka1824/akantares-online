@@ -239,6 +239,9 @@
 <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
 <script>
 const socket = io.connect();
+socket.on('connect', function() {
+	game.mySocketID = socket.id;
+});
 
 function helloClick(){socket.emit('hello event','hello world');}
 
@@ -261,8 +264,7 @@ function refreshLobby(sessions){
 socket.on('hosting event', (sessions) => {
     game.sessions = sessions;
 	refreshLobby(sessions);
-	game.mySocketID = sessions[sessions.length-1].hostID; //assuming the most recently joined session was the one you just hosted. race conditions may cause problems down the line? idk much about this
-	game.myHostID = sessions[sessions.length-1].hostID;
+	game.myHostID = game.mySocketID;
 });
 socket.on('reload event', (sessions) => {
     game.sessions = sessions;

@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-	// console.log('a user connected, ' + socket.id);
+	console.log('a user connected, ' + socket.id);
 });
 
 server.listen(3000, () => {
@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
 	socket.on('hosting event', (session) => {
 		session.hostID = socket.id; //client doesn't know what the server identifies it as, so when the session object was sent the hostID was still null and is now updated here
 		sessions.push(session);
-		// console.log(sessions);
+		console.log('hosting event', sessions);
 		socket.join(session.hostID); //the name given to the socket.io room is just the host id
 		io.emit('hosting event', sessions);
 	});
@@ -65,7 +65,7 @@ io.on('connection', (socket) => {
 		if(typeof sessions[i] !== 'undefined'){
 			sessions[i].guestID = socket.id; //and change the guestID value in it to that of the guest who wants to join
 			sessions[i].guestName = value[1];
-			// console.log(sessions);
+			console.log('joining event', sessions);
 			socket.join(sessions[i].hostID); //guest joins same room as host
 			io.emit('joining event', sessions);
 			io.to(sessions[i].hostID).emit('start playing', sessions[i]);
@@ -74,6 +74,7 @@ io.on('connection', (socket) => {
 		for(let i=0; i<sessions.length; i++){
 			if(sessions[i].hostID == socket.id){
 				let spliced = sessions.splice(i, 1);
+				console.log('a host joined someone else', sessions);
 				io.emit('reload event', sessions);
 			}
 		}
@@ -83,7 +84,7 @@ io.on('connection', (socket) => {
 //how to handle if host disconnects, or if guest disconnects, do i make them reload or what, what about lobby, etc.? i think this is mostly done
 io.on('connection', (socket) => {
 	socket.on('disconnect', () => {
-		// console.log('user disconnected, ' + socket.id);
+		console.log('user disconnected, ' + socket.id);
 		for(i=0; i<sessions.length; i++){
 			if(sessions[i].hostID==socket.id || sessions[i].guestID==socket.id){
 				io.to(sessions[i].hostID).emit('disconnect event', null); //let the host and guest know that one of them disconnected so they get sent back to the lobby
