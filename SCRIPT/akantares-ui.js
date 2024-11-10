@@ -67,6 +67,8 @@ INSTRUCTION_3`.split('\n');
 			
 			this.frameCount = 0;
 			
+			this.bD_rects = [{x:227,y:89}, {x:227,y:117}, {x:227,y:206}, {x:22,y:206}];
+			
 			this.bgm_names = `STARTSCREEN
 READY
 FLYING
@@ -303,6 +305,10 @@ THREE`.split('\n');
 						this.bgms_playing['READY'] = true;
 					}
 					this.ctx.drawImage(this.bmps['LOBBY'],0,0,320,240,0,0,320,240);
+					if(this.game.buttonDepress != null && this.frameCount < 0.5*window.fps){
+						this.ctx.drawImage(this.bmps['LOBBY'], 320, 21*this.game.buttonDepress, 74, 21, this.bD_rects[this.game.buttonDepress].x, this.bD_rects[this.game.buttonDepress].y, 74, 21);
+					}
+					this.game.buttonDepress = null;
 					// this.drawString(23, 75, 'Hosts');
 					// this.drawString(30, 94, 'Name');
 					// this.drawString(120, 94, 'Time');

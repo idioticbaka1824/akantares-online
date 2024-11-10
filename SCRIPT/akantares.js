@@ -51,6 +51,7 @@
 			this.mySocketID = null;
 			this.myHostID = null;
 			this.lobbyString = '';
+			this.buttonDepress = null; //0,1,2,3: join,host,quit,reload
 			this.chat = [];
 			this.hostName = '';
 			this.guestName = '';
@@ -67,11 +68,13 @@
 			
 			//physics
 			this.dt = 0.05; //time step for integrating motion
-			this.G = 3300; //universal gravitational constant
-			this.initCatapultSpeed = 18;
-			this.playerMass = 0.2;
+			this.G = 9600; //universal gravitational constant
+			this.initCatapultSpeed = 20;
+			this.playerMass = 0.3;
 			this.planetMass = 1; //sets the unit mass scale and is thus incorporated into the definition of G as well. do not change
 			this.bigPlanetMass = 2;
+			this.z_conditioning = 3.2; //see movement code in 'flying' case
+			this.lambda = 1/660; //linear mass density of repulsive dark matter at edges of screen
 			this.respiteFrames = 10; //# of frames at beginning when player gravity is disabled
 			this.fadeinDuration = 0.2;
 			this.resumeFrame = 0; //keep track of which frame you were on when paused, so that the game doesn't keep going in the background
@@ -279,40 +282,46 @@
 							if(!this.playerCollided){
 								this.playerMissileAcc.x = 0;
 								//respite frames disable the effect of gravity of the player for a bit at the beginning so that the catapult doesn't just get stuck orbiting the player
-								if(ui.frameCount>this.respiteFrames) {this.playerMissileAcc.x -= this.G*this.playerMass*(this.playerMissilePos.x-this.playerPos.x)*dist2(this.playerMissilePos.x-this.playerPos.x, this.playerMissilePos.y-this.playerPos.y, 10)**-3;} //the dz=10 is to make sure it's always some distance away from the planet, to avoid singularities
-								this.playerMissileAcc.x -= this.G*this.playerMass*(this.playerMissilePos.x-this.enemyPos.x)*dist2(this.playerMissilePos.x-this.enemyPos.x, this.playerMissilePos.y-this.enemyPos.y, 10)**-3;
+								if(ui.frameCount>this.respiteFrames) {this.playerMissileAcc.x -= this.G*this.playerMass*(this.playerMissilePos.x-this.playerPos.x)*dist2(this.playerMissilePos.x-this.playerPos.x, this.playerMissilePos.y-this.playerPos.y, this.z_conditioning*10)**-3;} //the dz=10 is to make sure it's always some distance away from the planet, to avoid singularities. the this.z_conditioning tunes this effect
+								this.playerMissileAcc.x -= this.G*this.playerMass*(this.playerMissilePos.x-this.enemyPos.x)*dist2(this.playerMissilePos.x-this.enemyPos.x, this.playerMissilePos.y-this.enemyPos.y, this.z_conditioning*10)**-3;
 								for(let i=0; i<this.planets.length; i++){
-									this.playerMissileAcc.x -= this.G*(this.planets[i].m==0?this.planetMass:this.bigPlanetMass)*(this.playerMissilePos.x-this.planets[i].x)*dist2(this.playerMissilePos.x-this.planets[i].x, this.playerMissilePos.y-this.planets[i].y, 10+4*this.planets[i].m)**-3;
+									this.playerMissileAcc.x -= this.G*(this.planets[i].m==0?this.planetMass:this.bigPlanetMass)*(this.playerMissilePos.x-this.planets[i].x)*dist2(this.playerMissilePos.x-this.planets[i].x, this.playerMissilePos.y-this.planets[i].y, this.z_conditioning*(10+4*this.planets[i].m))**-3;
 								}
+								//to avoid the shots straying too far offscreen, i place 'dark matter' at the edges of the screen, modeled as infinitely long lines of mass placed along the 4 edges with a certain linear mass density. these are tuned so as to always guide the shot toward the interior of the screen no matter where the shot is, so this would actually be physically impossible. but this is a game
+								this.playerMissileAcc.x += 2*this.G*this.lambda*(dist2(this.playerMissilePos.x, this.z_conditioning*10)**-1 - dist2(window.width-this.playerMissilePos.x, this.z_conditioning*10)**-1);
+								//finally, simple first order integration of motion using the calculated acceleration
 								this.playerMissileVel.x += this.dt*this.playerMissileAcc.x;
 								this.playerMissilePos.x += this.dt*this.playerMissileVel.x;
 								
 								this.playerMissileAcc.y = 0;
-								if(ui.frameCount>this.respiteFrames) {this.playerMissileAcc.y -= this.G*(this.playerMissilePos.y-this.playerPos.y)*dist2(this.playerMissilePos.x-this.playerPos.x, this.playerMissilePos.y-this.playerPos.y, 10)**-3;}
-								this.playerMissileAcc.y -= this.G*(this.playerMissilePos.y-this.enemyPos.y)*dist2(this.playerMissilePos.x-this.enemyPos.x, this.playerMissilePos.y-this.enemyPos.y, 10)**-3;
+								if(ui.frameCount>this.respiteFrames) {this.playerMissileAcc.y -= this.G*(this.playerMissilePos.y-this.playerPos.y)*dist2(this.playerMissilePos.x-this.playerPos.x, this.playerMissilePos.y-this.playerPos.y, this.z_conditioning*10)**-3;}
+								this.playerMissileAcc.y -= this.G*(this.playerMissilePos.y-this.enemyPos.y)*dist2(this.playerMissilePos.x-this.enemyPos.x, this.playerMissilePos.y-this.enemyPos.y, this.z_conditioning*10)**-3;
 								for(let i=0; i<this.planets.length; i++){
-									this.playerMissileAcc.y -= this.G*(this.planets[i].m==0?this.planetMass:this.bigPlanetMass)*(this.playerMissilePos.y-this.planets[i].y)*dist2(this.playerMissilePos.x-this.planets[i].x, this.playerMissilePos.y-this.planets[i].y, 10+4*this.planets[i].m)**-3;
+									this.playerMissileAcc.y -= this.G*(this.planets[i].m==0?this.planetMass:this.bigPlanetMass)*(this.playerMissilePos.y-this.planets[i].y)*dist2(this.playerMissilePos.x-this.planets[i].x, this.playerMissilePos.y-this.planets[i].y, this.z_conditioning*(10+4*this.planets[i].m))**-3;
 								}
+								this.playerMissileAcc.y += 2*this.G*this.lambda*(dist2(this.playerMissilePos.y, this.z_conditioning*10)**-1 - dist2(window.height-this.playerMissilePos.y, this.z_conditioning*10)**-1);
 								this.playerMissileVel.y += this.dt*this.playerMissileAcc.y;
 								this.playerMissilePos.y += this.dt*this.playerMissileVel.y;
 							}
 							//enemy missile movement
 							if(!this.enemyCollided){
 								this.enemyMissileAcc.x = 0;
-								if(ui.frameCount>this.respiteFrames) {this.enemyMissileAcc.x -= this.G*this.playerMass*(this.enemyMissilePos.x-this.enemyPos.x)*dist2(this.enemyMissilePos.x-this.enemyPos.x, this.enemyMissilePos.y-this.enemyPos.y, 10)**-3;}
-								this.enemyMissileAcc.x -= this.G*this.playerMass*(this.enemyMissilePos.x-this.playerPos.x)*dist2(this.enemyMissilePos.x-this.playerPos.x, this.enemyMissilePos.y-this.playerPos.y, 10)**-3;
+								if(ui.frameCount>this.respiteFrames) {this.enemyMissileAcc.x -= this.G*this.playerMass*(this.enemyMissilePos.x-this.enemyPos.x)*dist2(this.enemyMissilePos.x-this.enemyPos.x, this.enemyMissilePos.y-this.enemyPos.y, this.z_conditioning*10)**-3;}
+								this.enemyMissileAcc.x -= this.G*this.playerMass*(this.enemyMissilePos.x-this.playerPos.x)*dist2(this.enemyMissilePos.x-this.playerPos.x, this.enemyMissilePos.y-this.playerPos.y, this.z_conditioning*10)**-3;
 								for(let i=0; i<this.planets.length; i++){
-									this.enemyMissileAcc.x -= this.G*(this.planets[i].m==0?this.planetMass:this.bigPlanetMass)*(this.enemyMissilePos.x-this.planets[i].x)*dist2(this.enemyMissilePos.x-this.planets[i].x, this.enemyMissilePos.y-this.planets[i].y, 10+4*this.planets[i].m)**-3;
+									this.enemyMissileAcc.x -= this.G*(this.planets[i].m==0?this.planetMass:this.bigPlanetMass)*(this.enemyMissilePos.x-this.planets[i].x)*dist2(this.enemyMissilePos.x-this.planets[i].x, this.enemyMissilePos.y-this.planets[i].y, this.z_conditioning*(10+4*this.planets[i].m))**-3;
 								}
+								this.enemyMissileAcc.x += 2*this.G*this.lambda*(dist2(this.enemyMissilePos.x, this.z_conditioning*10)**-1 - dist2(window.width-this.enemyMissilePos.x, this.z_conditioning*10)**-1);
 								this.enemyMissileVel.x += this.dt*this.enemyMissileAcc.x;
 								this.enemyMissilePos.x += this.dt*this.enemyMissileVel.x;
 								
 								this.enemyMissileAcc.y = 0;
-								if(ui.frameCount>this.respiteFrames) {this.enemyMissileAcc.y -= this.G*this.playerMass*(this.enemyMissilePos.y-this.enemyPos.y)*dist2(this.enemyMissilePos.x-this.enemyPos.x, this.enemyMissilePos.y-this.enemyPos.y, 10)**-3;}
-								this.enemyMissileAcc.y -= this.G*this.playerMass*(this.enemyMissilePos.y-this.playerPos.y)*dist2(this.enemyMissilePos.x-this.playerPos.x, this.enemyMissilePos.y-this.playerPos.y, 10)**-3;
+								if(ui.frameCount>this.respiteFrames) {this.enemyMissileAcc.y -= this.G*this.playerMass*(this.enemyMissilePos.y-this.enemyPos.y)*dist2(this.enemyMissilePos.x-this.enemyPos.x, this.enemyMissilePos.y-this.enemyPos.y, this.z_conditioning*10)**-3;}
+								this.enemyMissileAcc.y -= this.G*this.playerMass*(this.enemyMissilePos.y-this.playerPos.y)*dist2(this.enemyMissilePos.x-this.playerPos.x, this.enemyMissilePos.y-this.playerPos.y, this.z_conditioning*10)**-3;
 								for(let i=0; i<this.planets.length; i++){
-									this.enemyMissileAcc.y -= this.G*(this.planets[i].m==0?this.planetMass:this.bigPlanetMass)*(this.enemyMissilePos.y-this.planets[i].y)*dist2(this.enemyMissilePos.x-this.planets[i].x, this.enemyMissilePos.y-this.planets[i].y, 10+4*this.planets[i].m)**-3;
+									this.enemyMissileAcc.y -= this.G*(this.planets[i].m==0?this.planetMass:this.bigPlanetMass)*(this.enemyMissilePos.y-this.planets[i].y)*dist2(this.enemyMissilePos.x-this.planets[i].x, this.enemyMissilePos.y-this.planets[i].y, this.z_conditioning*(10+4*this.planets[i].m))**-3;
 								}
+								this.enemyMissileAcc.y += 2*this.G*this.lambda*(dist2(this.enemyMissilePos.y, this.z_conditioning*10)**-1 - dist2(window.height-this.enemyMissilePos.y, this.z_conditioning*10)**-1);
 								this.enemyMissileVel.y += this.dt*this.enemyMissileAcc.y;
 								this.enemyMissilePos.y += this.dt*this.enemyMissileVel.y;
 							}
