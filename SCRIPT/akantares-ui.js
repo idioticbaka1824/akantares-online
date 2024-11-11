@@ -154,12 +154,12 @@ THREE`.split('\n');
 				this.strAlreadyHost = 'もう　ホスト　です';
 				this.strSelectSession = 'なにか　せんたくして　ください';
 				this.strOwnGame = 'じぶん　の　ゲーム　は　せつぞく　できません';
-				this.strPlayerFace = 'ひょうじょう:';
+				this.strPlayerFace = '表情:';
 				this.strChat = 'チャット:';
 				this.strSend = 'そうしん　する';
 				
-				this.strDirection = 'ほうこう:';
-				this.strGo = 'けってい!';
+				this.strDirection = '方向';
+				this.strGo = '決定';
 				this.strPlsShoot = 'ほうこう　を　きめて　ください';
 				this.strWaiting = 'てき　の　ばん';
 				this.strPlayer = 'プレイヤー ';
@@ -526,9 +526,9 @@ THREE`.split('\n');
 							if(this.game.resultString=='2hit'){this.ctx.drawImage(this.bmps['RESULT'], 0,52,68,16, window.width/2-68/2,window.height/2-16/2,68,16);}
 						}
 						if(window.lang == 'ja-JP'){
-							if(this.game.resultString=='1hit'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,4,192,16, window.width/2-192/2,window.height/2-16/2,192,16);}
-							if(this.game.resultString=='miss'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,28,192,16, window.width/2-192/2,window.height/2-16/2,192,16);}
-							if(this.game.resultString=='2hit'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,52,192,16, window.width/2-192/2,window.height/2-16/2,192,16);}
+							if(this.game.resultString=='1hit'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,0,192,20, window.width/2-192/2,window.height/2-20/2,192,20);}
+							if(this.game.resultString=='miss'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,24,192,20, window.width/2-192/2,window.height/2-20/2,192,20);}
+							if(this.game.resultString=='2hit'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,48,192,20, window.width/2-192/2,window.height/2-20/2,192,20);}
 						}
 					}
 					
