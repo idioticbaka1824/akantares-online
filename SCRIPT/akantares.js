@@ -50,7 +50,7 @@
 			this.sessions = []; //for listing them in the lobby. see server's index.js for structure of a session object
 			this.mySocketID = null;
 			this.myHostID = null;
-			this.lobbyString = '';
+			this.lobbyString = 'strNull';
 			this.buttonDepress = null; //0,1,2,3: join,host,quit,reload
 			this.chat = [];
 			this.hostName = '';
@@ -456,7 +456,7 @@
 				resizeSlider();
 				canvasContainer.style.height = gameCanvas.height + document.getElementById('fireDiv').offsetHeight; //there has to be a css way to do this???
 				let lobbyList = document.getElementById('lobbyList');
-				let newLobbyListStyle = window.scale==2 ? 'position:absolute; font-size:26px; left:46px; top:244px; width:362px; height:180px' : 'position:absolute; font-size:13px; left:23px; top:138px; width:181px; height:90px';
+				let newLobbyListStyle = window.scale==2 ? 'position:relative; font-size:26px; left:46px; top:180px; width:364px; height:212px' : 'position:relative; font-size:13px; left:23px; top:90px; width:182px; height:106px';
 				newLobbyListStyle = 'visibility:' + (this.gameState=='lobby'?'visible':'hidden') + '; ' + newLobbyListStyle;
 				lobbyList.style = newLobbyListStyle;
 				document.getElementById('chat-list').style.height = gameCanvas.height;

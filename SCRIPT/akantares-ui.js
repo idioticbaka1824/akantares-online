@@ -36,6 +36,7 @@
             }
 			
 			
+			//asset loading
 			this.bmps = {};
 			const bmp_names = `CATAPULT
 COLOR1
@@ -51,11 +52,13 @@ MISSILE
 NAMEPLATE
 PLANET
 RESULT
+RESULT_JP
 STARTSCREEN
 THREE
 TITLE
 WINMARK
 LOBBY
+LOBBY_JP
 INSTRUCTION_1
 INSTRUCTION_2
 INSTRUCTION_3`.split('\n');
@@ -66,8 +69,8 @@ INSTRUCTION_3`.split('\n');
 			}
 			
 			this.frameCount = 0;
-			
 			this.bD_rects = [{x:227,y:89}, {x:227,y:117}, {x:227,y:206}, {x:22,y:206}];
+			
 			
 			this.bgm_names = `STARTSCREEN
 READY
@@ -105,7 +108,79 @@ THREE`.split('\n');
 			window.audioContext = new AudioContext();
 			this.buffer = 0;
 			this.source = 0;
+			
+			this.translate(navigator.language);
+			
         }
+		
+		translate(lang = 'en-US'){
+			this.strLoaded = '...Loaded!'
+			this.strAkantares = 'AKANTARES';
+			this.str1Player = 'Single Player';
+			this.str2PlayerOffline = 'Multiplayer (Offline)';
+			this.str2PlayerOnline = 'Multiplayer (Online)';
+			this.strInstructions = 'Instructions';
+			
+			this.strAlreadyHost = 'You are already a host';
+			this.strSelectSession = 'Please select a host from the list';
+			this.strOwnGame = 'You cannot join your own game';
+			this.strPlayerFace = 'Player face:';
+			this.strChat = 'Chat:';
+			this.strSend = 'Send';
+			
+			this.strDirection = 'Direction:';
+			this.strGo = 'Go!';
+			this.strPlsShoot = 'Please Take your shot';
+			this.strWaiting = 'Waiting for opponent';
+			this.strPlayer = 'Player ';
+			this.strTurn = "'s turn";
+			this.strWin = ' win!'
+			this.strDisconnect = 'Opponent disconnected...';
+			
+			this.strRematch = 'Rematch?';
+			this.strYes = 'Yes';
+			this.strNo = 'No';
+			
+			if(lang == 'ja-JP'){
+				this.pushSpace = 'スペースキー　を　おして';
+				if('ontouchstart' in window){this.pushSpace = 'どこか　おして';}
+				this.strLoaded = '...ロード　しました!'
+				this.strAkantares = 'アカンタレス';
+				this.str1Player = 'シングル プレーヤー';
+				this.str2PlayerOffline = 'マルチプレイヤー (オフライン)';
+				this.str2PlayerOnline = 'マルチプレイヤー　(オンライン)';
+				this.strInstructions = 'てじゅん';
+				
+				this.strAlreadyHost = 'もう　ホスト　です';
+				this.strSelectSession = 'なにか　せんたくして　ください';
+				this.strOwnGame = 'じぶん　の　ゲーム　は　せつぞく　できません';
+				this.strPlayerFace = 'ひょうじょう:';
+				this.strChat = 'チャット:';
+				this.strSend = 'そうしん　する';
+				
+				this.strDirection = 'ほうこう:';
+				this.strGo = 'けってい!';
+				this.strPlsShoot = 'ほうこう　を　きめて　ください';
+				this.strWaiting = 'てき　の　ばん';
+				this.strPlayer = 'プレイヤー ';
+				this.strTurn = " の　ばん";
+				this.strWin = ' の　かち!'
+				this.strDisconnect = 'てき　は せつだんされた...';
+				
+				this.strRematch = 'さいせん　する?';
+				this.strYes = 'もう　いっかい!';
+				this.strNo = 'いやだ...';
+			}
+			this.strNull = '';
+			document.getElementById('strDirection').innerText = this.strDirection;
+			document.getElementById('fireButton').innerText = this.strGo;
+			document.getElementById('strPlayerFace').innerText = this.strPlayerFace;
+			document.getElementById('strChat').innerText = this.strChat;
+			document.getElementById('strSend').innerText = this.strSend;
+			this.lobbyStrings = {'strNull':this.strNull, 'strAlreadyHost':this.strAlreadyHost, 'strSelectSession':this.strSelectSession, 'strOwnGame':this.strOwnGame};
+		}	
+		
+		
 		
         async loadAudio(bgmName) {
 			  try {
@@ -224,12 +299,16 @@ THREE`.split('\n');
 		drawString(x, y, str, zoom=1, align='left'){
 			let x_ = x;
 			let y_ = y;
-			if(align=='centre'){x_=x-zoom*str.length*6/2; y_=y-zoom*12/2;}
+			if(align=='centre'){x_=x-zoom*str.length*(6+2*(window.lang=='ja-JP'))/2; y_=y-zoom*12/2;}
 			let newlines = [0];
 			for(let i=0; i<str.length; i++){
 				if(str[i]=='\n'){newlines.push(i);}
-				if(str.charCodeAt(i)>=0x20){
-					this.ctx.drawImage(this.bmps['FONT_1'], 8*((str.charCodeAt(i)-0x20)%32), 12*~~((str.charCodeAt(i)-0x20)/32), 8, 12, x_+6*(i-newlines[newlines.length-1]-(newlines.length>1))*zoom, y_+12*(newlines.length-1)*zoom -2, 8*zoom, 12*zoom); //~~ is shortcut for floor function somehow
+				if(str.charCodeAt(i)>=0x20 && str.charCodeAt(i)<=0x3040){
+					this.ctx.drawImage(this.bmps['FONT_1'], 8*((str.charCodeAt(i)-0x20)%32), 12*~~((str.charCodeAt(i)-0x20)/32), 8, 12, x_+(6+2*(window.lang=='ja-JP'))*(i-newlines[newlines.length-1]-(newlines.length>1))*zoom, y_+12*(newlines.length-1)*zoom -2, 8*zoom, 12*zoom); //~~ is shortcut for floor function somehow
+				}
+				//hiragana small 'a' in bmp_font_1 corresponds to utf-16 value of feff+0180, i.e. 'ƀ'. it is actually at feff+3041. there is an offset of 0x2ec1 (dec 11969).
+				if(str.charCodeAt(i)>=0x3040){
+					this.ctx.drawImage(this.bmps['FONT_1'], 8*((str.charCodeAt(i)-0x20-0x2ec1)%32), 12*~~((str.charCodeAt(i)-0x20-0x2ec1)/32), 8, 12, x_+8*(i-newlines[newlines.length-1]-(newlines.length>1))*zoom, y_+12*(newlines.length-1)*zoom -2, 8*zoom, 12*zoom);
 				}
 			}
 		}
@@ -259,7 +338,7 @@ THREE`.split('\n');
 			
 			switch(this.game.gameState) {
 				case 'loading':
-					this.drawString(130-6*(this.pushSpace.length-10)/2,window.height/2-4,'...Loaded!\n\n'+this.pushSpace);
+					this.drawString(130-6*(this.pushSpace.length-10)/2,window.height/2-4,this.strLoaded+'\n\n'+this.pushSpace);
 					break;
 					
 				case 'startscreen':
@@ -270,7 +349,7 @@ THREE`.split('\n');
 					}
 					this.fadeIn();
 					// this.ctx.drawImage(this.bmps['STARTSCREEN'], 0,0,320,240, 0,0,320,240); //old boring title screen graphic
-					this.drawString(52,66,'AKANTARES',4);
+					this.drawString(52,66,this.strAkantares,4);
 					this.ctx.drawImage(this.bmps['TITLE'], 8, 32, 112, 8, 100, 114, 112, 8);
 					//UBER COOL-LOOKING ANIMATION THINGY!!!
 					if(this.startscreenAnim == 0){
@@ -290,10 +369,10 @@ THREE`.split('\n');
 					this.ctx.drawImage(this.bmps['PLANET'],0,16,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount+Math.PI)-16/2, window.height/2-28+68*Math.sin(-0.01*this.frameCount+Math.PI)-16/2, 16,16);
 					// this.drawString(126-6*(this.pushSpace.length-10)/2, window.height-24, this.pushSpace+'.'.repeat(Math.abs(this.frameCount)/30%4));
 					this.selectString = this.frameCount%20<10==0 ? '> ' : '- ';
-					this.drawString(window.width/2, window.height-48, (this.game.gameMode==0?this.selectString:'')+'Single Player', 1,'centre');
-					this.drawString(window.width/2, window.height-36, (this.game.gameMode==1?this.selectString:'')+'Multiplayer (Offline)', 1,'centre');
-					this.drawString(window.width/2, window.height-24, (this.game.gameMode==2?this.selectString:'')+'Multiplayer (Online)', 1,'centre');
-					this.drawString(window.width/2, window.height-12, (this.game.gameMode==3?this.selectString:'')+'Instructions', 1,'centre');
+					this.drawString(window.width/2, window.height-48, (this.game.gameMode==0?this.selectString:'')+this.str1Player, 1,'centre');
+					this.drawString(window.width/2, window.height-36, (this.game.gameMode==1?this.selectString:'')+this.str2PlayerOffline, 1,'centre');
+					this.drawString(window.width/2, window.height-24, (this.game.gameMode==2?this.selectString:'')+this.str2PlayerOnline, 1,'centre');
+					this.drawString(window.width/2, window.height-12, (this.game.gameMode==3?this.selectString:'')+this.strInstructions, 1,'centre');
 					break;
 					
 				
@@ -319,7 +398,7 @@ THREE`.split('\n');
 						// this.drawString(120, 108+12*(i+1), this.game.sessions[i].time.slice(11,19));
 						// console.log(this.game.sessions[i].time);
 					// }
-						ui.drawString(window.width/2, 50, this.game.lobbyString, 1, 'centre');
+						ui.drawString(window.width/2, 50, this.lobbyStrings[this.game.lobbyString], 1, 'centre');
 					this.ctx.filter = 'none';
 					
 					break;
@@ -380,14 +459,14 @@ THREE`.split('\n');
 							this.play_bgm('READY');
 							this.bgms_playing['READY'] = true;
 						}
-						if(this.game.gameMode == 0){this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Please Take your shot'+'.'.repeat(Math.abs(this.frameCount)/30%4));}
-						if(this.game.gameMode == 1){this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Player '+(1+this.game.whoseTurn).toString()+"'s turn"+'.'.repeat(Math.abs(this.frameCount)/30%4));}
+						if(this.game.gameMode == 0){this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlsShoot+'.'.repeat(Math.abs(this.frameCount)/30%4));}
+						if(this.game.gameMode == 1){this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlayer+(1+this.game.whoseTurn).toString()+this.strTurn+'.'.repeat(Math.abs(this.frameCount)/30%4));}
 						if(this.game.gameMode == 2){
 							if((this.game.playerType=='host' && this.game.hostFired==false) || (this.game.playerType=='guest' && this.game.guestFired==false)){
-								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Please Take your shot'+'.'.repeat(Math.abs(this.frameCount)/30%4));
+								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlsShoot+'.'.repeat(Math.abs(this.frameCount)/30%4));
 							}
 							if((this.game.playerType=='host' && this.game.hostFired==true && this.game.guestFired==false) || (this.game.playerType=='guest' && this.game.guestFired==true && this.game.hostFired==false)){
-								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Waiting for opponent'+'.'.repeat(Math.abs(this.frameCount)/30%4));
+								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strWaiting+'.'.repeat(Math.abs(this.frameCount)/30%4));
 							}
 						}
 					}
@@ -441,10 +520,16 @@ THREE`.split('\n');
 								this.ctx.drawImage(this.bmps['PLANET'], 48,32+8*(this.frameCount%10<5), 8,8, this.game.enemyPos.x-0.4*this.frameCount*Math.cos(j*2*Math.PI/5+Math.PI/2)-8/2, this.game.enemyPos.y-0.4*this.frameCount*Math.sin(j*2*Math.PI/5+Math.PI/2)-8/2, 8,8);
 							}
 						}
-						if(this.game.resultString=='1hit'){this.ctx.drawImage(this.bmps['RESULT'], 0,4,40,16, window.width/2-40/2,window.height/2-16/2,40,16);}
-						if(this.game.resultString=='miss'){this.ctx.drawImage(this.bmps['RESULT'], 0,28,68,16, window.width/2-68/2,window.height/2-16/2,68,16);}
-						if(this.game.resultString=='2hit'){this.ctx.drawImage(this.bmps['RESULT'], 0,52,68,16, window.width/2-68/2,window.height/2-16/2,68,16);}
-						
+						if(window.lang != 'ja-JP'){
+							if(this.game.resultString=='1hit'){this.ctx.drawImage(this.bmps['RESULT'], 0,4,40,16, window.width/2-40/2,window.height/2-16/2,40,16);}
+							if(this.game.resultString=='miss'){this.ctx.drawImage(this.bmps['RESULT'], 0,28,68,16, window.width/2-68/2,window.height/2-16/2,68,16);}
+							if(this.game.resultString=='2hit'){this.ctx.drawImage(this.bmps['RESULT'], 0,52,68,16, window.width/2-68/2,window.height/2-16/2,68,16);}
+						}
+						if(window.lang == 'ja-JP'){
+							if(this.game.resultString=='1hit'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,4,192,16, window.width/2-192/2,window.height/2-16/2,192,16);}
+							if(this.game.resultString=='miss'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,28,192,16, window.width/2-192/2,window.height/2-16/2,192,16);}
+							if(this.game.resultString=='2hit'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,52,192,16, window.width/2-192/2,window.height/2-16/2,192,16);}
+						}
 					}
 					
 					if(['win', 'lose', 'draw'].includes(this.game.gameSubState)){
@@ -453,10 +538,13 @@ THREE`.split('\n');
 							this.play_bgm('GAMEOVER');
 							this.bgms_playing['GAMEOVER'] = true;
 						}
-						if(this.game.gameMode==0 || this.game.gameSubState=='draw'){this.ctx.drawImage(this.bmps['RESULT'], 0, 72+40*(this.game.gameSubState=='lose')+80*(this.game.gameSubState=='draw'), 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);} //win, lose, draw images. only in single player
+						if(this.game.gameMode==0 || this.game.gameSubState=='draw'){
+							if(window.lang != 'ja-JP'){this.ctx.drawImage(this.bmps['RESULT'], 0, 72+40*(this.game.gameSubState=='lose')+80*(this.game.gameSubState=='draw'), 120, 40, window.width/2-120/2, window.height/2-40/2, 120, 40);} //win, lose, draw images. only in single player
+							if(window.lang == 'ja-JP'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0, 72+40*(this.game.gameSubState=='lose')+80*(this.game.gameSubState=='draw'), 174, 40, window.width/2-174/2, window.height/2-40/2, 174, 40);}
+						}
 						if(this.game.gameMode==1){ //2player offline mode. the 'win' and 'lose' strings are recycled to mean player1 win and player2 win respectively.
-							if(this.game.gameSubState=='win'){this.drawString(window.width/2, window.height/2, 'Player 1 win!', 2, 'centre');}
-							if(this.game.gameSubState=='lose'){this.drawString(window.width/2, window.height/2, 'Player 2 win!', 2, 'centre');}
+							if(this.game.gameSubState=='win'){this.drawString(window.width/2, window.height/2, this.strPlayer+'1'+this.strWin, 2, 'centre');}
+							if(this.game.gameSubState=='lose'){this.drawString(window.width/2, window.height/2, this.strPlayer+'2'+this.strWin, 2, 'centre');}
 						}
 						if(this.game.gameMode != 2){this.drawString(126-6*(this.pushSpace.length-10)/2, window.height-20, this.pushSpace+'.'.repeat(Math.abs(this.frameCount)/30%4));}
 						
@@ -468,18 +556,18 @@ THREE`.split('\n');
 								this.ctx.drawImage(this.bmps['RESULT'], 0, 112, 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);
 							}
 							this.selectString = this.frameCount%20<10==0 ? '> ' : '- '; //copied from the title screen
-							this.drawString(window.width/2, window.height-48, 'Rematch?', 1, 'centre');
-							this.drawString(window.width/2, window.height-36, (this.game.rematchChoice==1?this.selectString:'')+'Yes', 1,'centre');
-							this.drawString(window.width/2, window.height-24, (this.game.rematchChoice==0?this.selectString:'')+'No', 1,'centre');
+							this.drawString(window.width/2, window.height-48, this.strRematch, 1, 'centre');
+							this.drawString(window.width/2, window.height-36, (this.game.rematchChoice==1?this.selectString:'')+this.strYes, 1,'centre');
+							this.drawString(window.width/2, window.height-24, (this.game.rematchChoice==0?this.selectString:'')+this.strNo, 1,'centre');
 							if(this.game.rematchChoiceMade==1 && this.game.rematch[this.game.playerType=='host'?'guest':'host'] == null){ //if you want to rematch but opponent is yet undecided
-								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), 'Waiting for opponent'+'.'.repeat(Math.abs(this.frameCount)/30%4));
+								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strWaiting+'.'.repeat(Math.abs(this.frameCount)/30%4));
 							}
 						}
 					}
 					
 					if(this.game.disconnectTimer == true){
 						this.ctx.filter = 'none';
-						ui.drawString(window.width/2, window.height/2, 'Opponent disconnected...', 2, 'centre');
+						ui.drawString(window.width/2, window.height/2, this.strDisconnect, 2, 'centre');
 					}
 					}//this end brace is for the 'if gameMode!=3' else block that i didnt bother indenting
 					
