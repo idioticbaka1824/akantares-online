@@ -68,13 +68,13 @@
 			
 			//physics
 			this.dt = 0.05; //time step for integrating motion
-			this.G = 9600; //universal gravitational constant
-			this.initCatapultSpeed = 20;
+			this.G = 9000; //universal gravitational constant
+			this.initCatapultSpeed = 21;
 			this.playerMass = 0.3;
 			this.planetMass = 1; //sets the unit mass scale and is thus incorporated into the definition of G as well. do not change
 			this.bigPlanetMass = 2;
 			this.z_conditioning = 3.2; //see movement code in 'flying' case
-			this.lambda = 1/660; //linear mass density of repulsive dark matter at edges of screen
+			this.lambda = 1/620; //linear mass density of repulsive dark matter at edges of screen
 			this.respiteFrames = 10; //# of frames at beginning when player gravity is disabled
 			this.fadeinDuration = 0.2;
 			this.resumeFrame = 0; //keep track of which frame you were on when paused, so that the game doesn't keep going in the background
@@ -179,6 +179,7 @@
 					this.resetStuff('shot');
 					this.hostEmoji = 0;
 					this.guestEmoji = 0;
+					document.getElementById('emoji-select').selectedIndex = 0;
 					this.justStartedPlaying = true;
 					break;
 				
@@ -326,7 +327,7 @@
 								this.enemyMissilePos.y += this.dt*this.enemyMissileVel.y;
 							}
 							
-							if(ui.frameCount%15 == 0){
+							if(ui.frameCount%12 == 0){
 								this.playerTrail.push({x:this.playerMissilePos.x, y:this.playerMissilePos.y});
 								this.enemyTrail.push({x:this.enemyMissilePos.x, y:this.enemyMissilePos.y});
 							}
@@ -456,7 +457,7 @@
 				resizeSlider();
 				canvasContainer.style.height = gameCanvas.height + document.getElementById('fireDiv').offsetHeight; //there has to be a css way to do this???
 				let lobbyList = document.getElementById('lobbyList');
-				let newLobbyListStyle = window.scale==2 ? 'position:relative; font-size:26px; left:46px; top:180px; width:364px; height:212px' : 'position:relative; font-size:13px; left:23px; top:90px; width:182px; height:106px';
+				let newLobbyListStyle = window.scale==2 ? 'position:relative; font-size:26px; left:46px; top:212px; width:364px; height:180px' : 'position:relative; font-size:13px; left:23px; top:106px; width:182px; height:90px';
 				newLobbyListStyle = 'visibility:' + (this.gameState=='lobby'?'visible':'hidden') + '; ' + newLobbyListStyle;
 				lobbyList.style = newLobbyListStyle;
 				document.getElementById('chat-list').style.height = gameCanvas.height;

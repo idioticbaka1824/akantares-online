@@ -46,9 +46,9 @@
 		#canvas-container select{
 			position: relative;
 			left: 23px;
-			top: 90px;
+			top: 106px;
 			width: 181px;
-			height: 106px;
+			height: 90px;
 		}
 		
 		#lobbyList{
@@ -84,7 +84,7 @@
 		<div id='fireDiv' style='visibility: hidden; margin:0; padding:0; width: fit-content'>
 			<span id='strDirection'>Direction:</span>
 			<input type="range" min="0" max="450" value="360" class="slider" id="fireRange" style='margin: 5px'>
-			<button id='fireButton' onclick='game.fire()' style='margin: 5px'>Go!</button>
+			<button id='fireButton' onclick='if(game.gameMode!=3){game.fire();}' style='margin: 5px'>Go!</button>
 		</div>
 		<!-- <br> -->
         <canvas id="game-canvas" style='image-rendering: pixelated'></canvas>
@@ -207,7 +207,7 @@
 			
 			gameCanvas.addEventListener('mousedown', (e) => {
                 click_coords = getMousePosition(gameCanvas, e);
-				window.clickHandling(click_coords[0], click_coords[1], e=e);
+				window.clickHandling(click_coords[0]/window.scale, click_coords[1]/window.scale, e=e);
             }, true);
 			window.clickHandling = (x, y, e) => {
 				if(game.gameState == 'lobby'){

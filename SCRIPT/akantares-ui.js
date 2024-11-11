@@ -349,7 +349,7 @@ THREE`.split('\n');
 					}
 					this.fadeIn();
 					// this.ctx.drawImage(this.bmps['STARTSCREEN'], 0,0,320,240, 0,0,320,240); //old boring title screen graphic
-					this.drawString(52,66,this.strAkantares,4);
+					this.drawString(window.width/2,86,this.strAkantares,4,'centre');
 					this.ctx.drawImage(this.bmps['TITLE'], 8, 32, 112, 8, 100, 114, 112, 8);
 					//UBER COOL-LOOKING ANIMATION THINGY!!!
 					if(this.startscreenAnim == 0){
@@ -383,9 +383,9 @@ THREE`.split('\n');
 						this.play_bgm('READY');
 						this.bgms_playing['READY'] = true;
 					}
-					this.ctx.drawImage(this.bmps['LOBBY'],0,0,320,240,0,0,320,240);
+					this.ctx.drawImage(this.bmps['LOBBY'+((window.lang=='ja-JP')?'_JP':'')],0,0,320,240,0,0,320,240);
 					if(this.game.buttonDepress != null && this.frameCount < 0.5*window.fps){
-						this.ctx.drawImage(this.bmps['LOBBY'], 320, 21*this.game.buttonDepress, 74, 21, this.bD_rects[this.game.buttonDepress].x, this.bD_rects[this.game.buttonDepress].y, 74, 21);
+						this.ctx.drawImage(this.bmps['LOBBY'+((window.lang=='ja-JP')?'_JP':'')], 320, 21*this.game.buttonDepress, 74, 21, this.bD_rects[this.game.buttonDepress].x, this.bD_rects[this.game.buttonDepress].y, 74, 21);
 					}
 					this.game.buttonDepress = null;
 					// this.drawString(23, 75, 'Hosts');
