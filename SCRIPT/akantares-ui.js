@@ -61,7 +61,10 @@ LOBBY
 LOBBY_JP
 INSTRUCTION_1
 INSTRUCTION_2
-INSTRUCTION_3`.split('\n');
+INSTRUCTION_3
+INSTRUCTION_1_JP
+INSTRUCTION_2_JP
+INSTRUCTION_3_JP`.split('\n');
 			for (const i in bmp_names){
 				this.bmps[bmp_names[i]] = new Image();
 				this.bmps[bmp_names[i]].src = "BMP_"+bmp_names[i]+".png";
@@ -142,8 +145,8 @@ THREE`.split('\n');
 			this.strNo = 'No';
 			
 			if(lang == 'ja-JP'){
-				this.pushSpace = 'スペースキー　を　おして';
-				if('ontouchstart' in window){this.pushSpace = 'どこか　おして';}
+				this.pushSpace = 'スペースキー　を　おしなさい';
+				if('ontouchstart' in window){this.pushSpace = 'どこか　おしなさい';}
 				this.strLoaded = '...ロード　しました!'
 				this.strAkantares = 'アカンタレス';
 				this.str1Player = 'シングル プレーヤー';
@@ -296,7 +299,8 @@ THREE`.split('\n');
 				}
         }
 		
-		drawString(x, y, str, zoom=1, align='left'){
+		drawString(x, y, str_in, zoom=1, align='left'){
+			let str = str_in;
 			let x_ = x;
 			let y_ = y;
 			if(align=='centre'){x_=x-zoom*str.length*(6+2*(window.lang=='ja-JP'))/2; y_=y-zoom*12/2;}
@@ -311,6 +315,8 @@ THREE`.split('\n');
 					this.ctx.drawImage(this.bmps['FONT_1'], 8*((str.charCodeAt(i)-0x20-0x2ec1)%32), 12*~~((str.charCodeAt(i)-0x20-0x2ec1)/32), 8, 12, x_+8*(i-newlines[newlines.length-1]-(newlines.length>1))*zoom, y_+12*(newlines.length-1)*zoom -2, 8*zoom, 12*zoom);
 				}
 			}
+			// const punct1 = ['Á','Â','Ã','Ä','Å','Æ','Ç','È','É','õ','ö'];
+			// const punct2 = ['、','。','，','．','・','：','；','？','！','「','」'];
 		}
 		
 		fadeIn(){
@@ -407,7 +413,7 @@ THREE`.split('\n');
 				case 'playing':
 				
 					if(this.game.gameMode == 3){
-						this.ctx.drawImage(this.bmps['INSTRUCTION_'+this.game.gameSubState.toString()], 0, 0, 320, 240, 0, 0, 320, 240);
+						this.ctx.drawImage(this.bmps['INSTRUCTION_'+this.game.gameSubState.toString()+((window.lang=='ja-JP')?'_JP':'')], 0, 0, 320, 240, 0, 0, 320, 240);
 						break;
 					}
 					else{

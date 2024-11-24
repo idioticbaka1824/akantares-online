@@ -38,6 +38,7 @@ Server is not robust to disconnections. If either player disconnects, no matter 
 
 ~~Credits:
 Akantares by Studio Pixel.
+English translation by GIRakaCHEEZER.
 Javascript recreation of Akantares, and music, by IdioticBaka1824.
 Game code template by Alula.
 Server and communication code template from Socket.io.
