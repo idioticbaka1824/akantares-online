@@ -74,7 +74,7 @@
 			this.planetMass = 1; //sets the unit mass scale and is thus incorporated into the definition of G as well. do not change
 			this.bigPlanetMass = 2;
 			this.z_conditioning = 3.2; //see movement code in 'flying' case
-			this.lambda = 1/600; //linear mass density of repulsive dark matter at edges of screen
+			this.lambda = 1/610; //linear mass density of repulsive dark matter at edges of screen
 			this.respiteFrames = 10; //# of frames at beginning when player gravity is disabled
 			this.fadeinDuration = 0.2;
 			this.resumeFrame = 0; //keep track of which frame you were on when paused, so that the game doesn't keep going in the background

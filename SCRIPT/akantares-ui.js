@@ -117,6 +117,8 @@ THREE`.split('\n');
         }
 		
 		translate(lang = 'en-US'){
+			this.pushSpace = 'Push Space';
+			if('ontouchstart' in window){this.pushSpace = 'Press Anywhere';}
 			this.strLoaded = '...Loaded!'
 			this.strAkantares = 'AKANTARES';
 			this.str1Player = 'Single Player';
