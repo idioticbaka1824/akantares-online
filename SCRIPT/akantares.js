@@ -169,7 +169,7 @@
 						}
 						while(this.playerPlanetIntersect());
 					}
-					if(this.gameMode==2 && typeof socket !=='undefined'){socket.emit('resetPlanets event', {hostID:this.myHostID});}
+					if(this.gameMode == 2 && typeof socket !=='undefined'){socket.emit('resetPlanets event', {hostID:this.myHostID});}
 					break;
 					
 				case 'gameover':
@@ -426,7 +426,7 @@
 									document.getElementById('fireButton').disabled = false;
 									this.gameSubState = 'ready';
 									ui.frameCount = 0;
-									if(this.gameMode!=2 && (this.resultString=='1hit' || this.resultString=='2hit')){this.readyFadeIn();}
+									if(this.resultString=='1hit' || this.resultString=='2hit'){this.readyFadeIn();}
 								}
 							}
 			
