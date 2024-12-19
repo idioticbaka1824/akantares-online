@@ -59,6 +59,17 @@
 		}
 		
 		#emoji-select {margin: 0.25rem; }
+		.button2{
+		  border: 0px solid;
+		}
+		.button2:hover {
+		  background-color: #3e8e41;
+		  filter: sepia(100%);
+		}
+		.button2:active {
+		  background-color: #3e8e41;
+		  transform: translateY(3px);
+		}
 		
 		#chat-container {margin-top: 1rem;}
 		#chat-form {padding: 0.25rem; position: relative; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box;}
@@ -93,7 +104,30 @@
 		<select id="lobbyList" size=6 style='visibility:hidden'></select>	
     </div>
 	<div id='chat-container' style='visibility:hidden'>
-			<span id='strPlayerFace'>Player face:</span><select id="emoji-select" onchange="socket.emit('emoji event', {hostID:game.myHostID, playerType:game.playerType, value:this.value});"></select>
+			<span id='strPlayerFace'>Player face:</span>
+			<!-- <select id="emoji-select" onchange="socket.emit('emoji event', {hostID:game.myHostID, playerType:game.playerType, value:this.value});"></select> -->
+			<table id="emojiTable">
+			  <tr>
+				<td><input type="image" class="button2" onclick="emojiClick(0)" id="emoji0" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(1)" id="emoji1" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(2)" id="emoji2" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(3)" id="emoji3" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(4)" id="emoji4" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(5)" id="emoji5" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(6)" id="emoji6" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(7)" id="emoji7" /></td>
+			  </tr>
+			  <tr>
+				<td><input type="image" class="button2" onclick="emojiClick(8)" id="emoji8" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(9)" id="emoji9" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(10)" id="emoji10" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(11)" id="emoji11" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(12)" id="emoji12" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(13)" id="emoji13" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(14)" id="emoji14" /></td>
+				<td><input type="image" class="button2" onclick="emojiClick(15)" id="emoji15" /></td>
+			  </tr>
+			</table>
 			<ul id='chat-list'>
 			<li style='background-color:#f0f0f0'><u id='strChat'>Chat:</u></li>
 			</ul>
@@ -199,13 +233,13 @@
 			}
 			document.addEventListener('orientationchange', resizeSlider());
 			
-			const emojis = ['🟡','😄','🤨','😥','😌','😑','🤪','😐','😰','😃','😱','😎','😒','😡','😏','😒'];
-			for(let i=0; i<emojis.length; i++){
-				let opt = document.createElement('option');
-				opt.value = i;
-				opt.innerHTML = emojis[i];
-				document.getElementById('emoji-select').appendChild(opt);
-			}
+			<!-- const emojis = ['🟡','😄','🤨','😥','😌','😑','🤪','😐','😰','😃','😱','😎','😒','😡','😏','😒']; -->
+			<!-- for(let i=0; i<emojis.length; i++){ -->
+				<!-- let opt = document.createElement('option'); -->
+				<!-- opt.value = i; -->
+				<!-- opt.innerHTML = emojis[i]; -->
+				<!-- document.getElementById('emoji-select').appendChild(opt); -->
+			<!-- } -->
 			
 			gameCanvas.addEventListener('mousedown', (e) => {
                 click_coords = getMousePosition(gameCanvas, e);
@@ -303,17 +337,44 @@ socket.on('start playing', (session) => { //this code is copied from akantares.j
     game.gameState = 'playing';
 	game.gameSubState = 'ready';
 	game.previousGameState = 'playing';
+	emojiInit();
 });
 socket.on('disconnect event', (msg) => { //this code leads to a condition in update() in akantares where the restart code is copied from the case where you press 'g' at the start menu
     game.disconnectTimer = true;
 	ui.frameCount = 2*window.fps; //in conjunction with checking for >3*fps in akantares.js, this avoids the re-popping up of the 'please take your shot text' when a disconnect happens
 });
 
+
+//initialising emoji select table
+function myStyle(k){
+	let oh = 16*(16-k); //offset horizontal
+	let ov = -16*(game.playerType=='guest'); //offset vertical
+	return {
+		background: `url(${ui.bmps['PLANET'].src})`,
+		<!-- background: "url('https://raadshaikh.github.io/akantares-js/BITMAP/BMP_PLANET.png')", -->
+		width: "16px",
+		height: "16px",
+		backgroundPosition: `${oh}px ${ov}px`,
+	}
+}
+function emojiInit(){
+	for(let i=0; i<16; i++){
+		var imgI = document.getElementById('emoji'+i);
+		imgI.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+		Object.assign(imgI.style, myStyle(i));
+	}
+}
+//sending emoji event
+function emojiClick(emoji_value){
+	socket.emit('emoji event', {hostID:game.myHostID, playerType:game.playerType, value:emoji_value});
+}
+//receiving emoji event
 socket.on('emoji event', (obj) => {
     <!-- console.log(obj); -->
 	if(obj.playerType == 'host'){game.hostEmoji = obj.value;}
 	if(obj.playerType == 'guest'){game.guestEmoji = obj.value;}
-	document.getElementById('emoji-select').blur();
+	<!-- document.getElementById('emoji-select').blur(); -->
+	document.getElementById('emojiTable').blur();
 	gameCanvas.focus();
 });
 

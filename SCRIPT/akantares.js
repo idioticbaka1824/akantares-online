@@ -179,7 +179,7 @@
 					this.resetStuff('shot');
 					this.hostEmoji = 0;
 					this.guestEmoji = 0;
-					document.getElementById('emoji-select').selectedIndex = 0;
+					// document.getElementById('emoji-select').selectedIndex = 0;
 					this.justStartedPlaying = true;
 					break;
 				
