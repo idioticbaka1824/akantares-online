@@ -169,7 +169,7 @@
 						}
 						while(this.playerPlanetIntersect());
 					}
-					if(this.gameMode == 2 && typeof socket !=='undefined'){socket.emit('resetPlanets event', {hostID:this.myHostID});}
+					if(this.gameMode==2 && typeof socket !=='undefined' && this.playerType=='host'){socket.emit('resetPlanets event', {hostID:this.myHostID});}
 					break;
 					
 				case 'gameover':
@@ -288,7 +288,7 @@
 								for(let i=0; i<this.planets.length; i++){
 									this.playerMissileAcc.x -= this.G*(this.planets[i].m==0?this.planetMass:this.bigPlanetMass)*(this.playerMissilePos.x-this.planets[i].x)*dist2(this.playerMissilePos.x-this.planets[i].x, this.playerMissilePos.y-this.planets[i].y, this.z_conditioning*(10+4*this.planets[i].m))**-3;
 								}
-								//to avoid the shots straying too far offscreen, i place 'dark matter' at the edges of the screen, modeled as infinitely long lines of mass placed along the 4 edges with a certain linear mass density. these are tuned so as to always guide the shot toward the interior of the screen no matter where the shot is, so this would actually be physically impossible. but this is a game
+								//to avoid the shots straying too far offscreen, i place 'dark matter' at the edges of the screen, modeled as infinitely long lines of mass placed along the 4 edges with a certain linear mass density. these are tuned so as to always guide the shot toward the interior of the screen no matter where the shot is, so this would actually be physically impossible. but this is a game so eh
 								this.playerMissileAcc.x += 2*this.G*this.lambda*(dist2(this.playerMissilePos.x, this.z_conditioning*10)**-1 - dist2(window.width-this.playerMissilePos.x, this.z_conditioning*10)**-1);
 								//finally, simple first order integration of motion using the calculated acceleration
 								this.playerMissileVel.x += this.dt*this.playerMissileAcc.x;
@@ -461,6 +461,7 @@
 				newLobbyListStyle = 'visibility:' + (this.gameState=='lobby'?'visible':'hidden') + '; ' + newLobbyListStyle;
 				lobbyList.style = newLobbyListStyle;
 				document.getElementById('chat-list').style.height = gameCanvas.height;
+				emojiInit(window.scale);
 				
 				ekeys['z'] = false;
 			}

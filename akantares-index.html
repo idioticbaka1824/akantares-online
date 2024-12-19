@@ -339,29 +339,32 @@ socket.on('start playing', (session) => { //this code is copied from akantares.j
 	game.previousGameState = 'playing';
 	emojiInit();
 });
-socket.on('disconnect event', (msg) => { //this code leads to a condition in update() in akantares where the restart code is copied from the case where you press 'g' at the start menu
+socket.on('disconnect event', (msg) => { //this code leads to a condition in update() in akantares.js where the restart code is copied from the case where you restart by pressing 'g' at the start menu
     game.disconnectTimer = true;
-	ui.frameCount = 2*window.fps; //in conjunction with checking for >3*fps in akantares.js, this avoids the re-popping up of the 'please take your shot text' when a disconnect happens
+	ui.frameCount = 2*window.fps; //in conjunction with checking for >3*fps in akantares.js, this avoids the re-popping up of the 'please take your shot' text when a disconnect happens
 });
 
 
 //initialising emoji select table
-function myStyle(k){
-	let oh = 16*(16-k); //offset horizontal
-	let ov = -16*(game.playerType=='guest'); //offset vertical
+function myStyle(k,z){
+	let oh = z*16*(16-k); //offset horizontal
+	let ov = -z*16*(game.playerType=='guest'); //offset vertical
 	return {
 		background: `url(${ui.bmps['PLANET'].src})`,
 		<!-- background: "url('https://raadshaikh.github.io/akantares-js/BITMAP/BMP_PLANET.png')", -->
-		width: "16px",
-		height: "16px",
+		width: `${16*z}px`,
+		height: `${16*z}px`,
 		backgroundPosition: `${oh}px ${ov}px`,
+		backgroundSize: '1600%',
+		imageRendering: 'pixelated',
 	}
 }
-function emojiInit(){
+function emojiInit(z=1){
+	//z=zoom, 1 or 2
 	for(let i=0; i<16; i++){
 		var imgI = document.getElementById('emoji'+i);
-		imgI.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-		Object.assign(imgI.style, myStyle(i));
+		imgI.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; //small transparent image as dummy placeholder image source
+		Object.assign(imgI.style, myStyle(i,z));
 	}
 }
 //sending emoji event

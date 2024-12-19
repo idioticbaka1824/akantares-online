@@ -591,7 +591,7 @@ THREE`.split('\n');
 					for(let i in this.bgm_names){this.bgms[this.bgm_names[i]].pause();}
 					this.drawString(0,0,'CONTINUE:F');
 					this.drawString(0,8,'RESET   :G');
-					this.drawString(0,16,'HELP    :H');
+					this.drawString(0,16,'ABOUT    :H');
 					if ('ontouchstart' in window) {
 						this.ctx.filter = 'brightness(50%)';
 						for(let i=0;i<3;i++){this.ctx.drawImage(this.bmps['PLANET'],0,48,24,24,80+i*82,26,68,68);} //bubbles around FGH
