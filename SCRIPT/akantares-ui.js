@@ -1,4 +1,7 @@
 (() => {
+	CanvasRenderingContext2D.prototype.drawImage2 = function(my_image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight){
+		this.drawImage(my_image, Math.round(sx), Math.round(sy), Math.round(sWidth), Math.round(sHeight), Math.round(dx), Math.round(dy), Math.round(dWidth), Math.round(dHeight))
+	} //there were some glitches in the image rendering around the edges that was apparently caused by subpixel rendering, this fixes that
 	
 	//mod function
 	function abs(x){
