@@ -295,12 +295,12 @@ THREE`.split('\n');
             }
 			if (rtl==false) {
 				for (let i = 0; i < str.length; i++) {
-					this.ctx.drawImage(this.bmps['KEYCODE'], (str.charCodeAt(i) - 0x30) * 8, 24, 8, 8, x-1 + 7*i, y, 8, 8);
+					this.ctx.drawImage2(this.bmps['KEYCODE'], (str.charCodeAt(i) - 0x30) * 8, 24, 8, 8, x-1 + 7*i, y, 8, 8);
 				}
 			}
 			else if(rtl==true) //right-to-left, for right-aligned numbers
 				for (let i = str.length-1; i >= 0; i--) {
-					this.ctx.drawImage(this.bmps['KEYCODE'], (str.charCodeAt(i) - 0x30) * 8, 24, 8, 8, x-1 - 7*(str.length-i), y, 8, 8);
+					this.ctx.drawImage2(this.bmps['KEYCODE'], (str.charCodeAt(i) - 0x30) * 8, 24, 8, 8, x-1 - 7*(str.length-i), y, 8, 8);
 				}
         }
 		
@@ -313,11 +313,11 @@ THREE`.split('\n');
 			for(let i=0; i<str.length; i++){
 				if(str[i]=='\n'){newlines.push(i);}
 				if(str.charCodeAt(i)>=0x20 && str.charCodeAt(i)<=0x3040){
-					this.ctx.drawImage(this.bmps['FONT_1'], 8*((str.charCodeAt(i)-0x20)%32), 12*~~((str.charCodeAt(i)-0x20)/32), 8, 12, x_+(6+2*(window.lang=='ja-JP'))*(i-newlines[newlines.length-1]-(newlines.length>1))*zoom, y_+12*(newlines.length-1)*zoom -2, 8*zoom, 12*zoom); //~~ is shortcut for floor function somehow
+					this.ctx.drawImage2(this.bmps['FONT_1'], 8*((str.charCodeAt(i)-0x20)%32), 12*~~((str.charCodeAt(i)-0x20)/32), 8, 12, x_+(6+2*(window.lang=='ja-JP'))*(i-newlines[newlines.length-1]-(newlines.length>1))*zoom, y_+12*(newlines.length-1)*zoom -2, 8*zoom, 12*zoom); //~~ is shortcut for floor function somehow
 				}
 				//hiragana small 'a' in bmp_font_1 corresponds to utf-16 value of feff+0180, i.e. 'ƀ'. it is actually at feff+3041. there is an offset of 0x2ec1 (dec 11969).
 				if(str.charCodeAt(i)>=0x3040){
-					this.ctx.drawImage(this.bmps['FONT_1'], 8*((str.charCodeAt(i)-0x20-0x2ec1)%32), 12*~~((str.charCodeAt(i)-0x20-0x2ec1)/32), 8, 12, x_+8*(i-newlines[newlines.length-1]-(newlines.length>1))*zoom, y_+12*(newlines.length-1)*zoom -2, 8*zoom, 12*zoom);
+					this.ctx.drawImage2(this.bmps['FONT_1'], 8*((str.charCodeAt(i)-0x20-0x2ec1)%32), 12*~~((str.charCodeAt(i)-0x20-0x2ec1)/32), 8, 12, x_+8*(i-newlines[newlines.length-1]-(newlines.length>1))*zoom, y_+12*(newlines.length-1)*zoom -2, 8*zoom, 12*zoom);
 				}
 			}
 			// const punct1 = ['Á','Â','Ã','Ä','Å','Æ','Ç','È','É','õ','ö'];
@@ -359,25 +359,25 @@ THREE`.split('\n');
 						this.bgms_playing['STARTSCREEN'] = true;
 					}
 					this.fadeIn();
-					// this.ctx.drawImage(this.bmps['STARTSCREEN'], 0,0,320,240, 0,0,320,240); //old boring title screen graphic
+					// this.ctx.drawImage2(this.bmps['STARTSCREEN'], 0,0,320,240, 0,0,320,240); //old boring title screen graphic
 					this.drawString(window.width/2,86,this.strAkantares,4,'centre');
-					this.ctx.drawImage(this.bmps['TITLE'], 8, 32, 112, 8, 100, 114, 112, 8);
+					this.ctx.drawImage2(this.bmps['TITLE'], 8, 32, 112, 8, 100, 114, 112, 8);
 					//UBER COOL-LOOKING ANIMATION THINGY!!!
 					if(this.startscreenAnim == 0){
 						for(let i=0; i<10; i++){
-							this.ctx.drawImage(this.bmps['PLANET'],43,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-i*20)), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-i*20)), 1,1);
-							this.ctx.drawImage(this.bmps['PLANET'],59,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-i*20)+Math.PI), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-i*20)+Math.PI), 1,1);
+							this.ctx.drawImage2(this.bmps['PLANET'],43,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-i*20)), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-i*20)), 1,1);
+							this.ctx.drawImage2(this.bmps['PLANET'],59,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-i*20)+Math.PI), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-i*20)+Math.PI), 1,1);
 						}
 					}
 					//alternate animation
 					else{
 						for(let i=0; i<16; i++){
-							this.ctx.drawImage(this.bmps['PLANET'],43,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-this.frameCount%20-i*20)), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-this.frameCount%20-i*20)), 1,1);
-							this.ctx.drawImage(this.bmps['PLANET'],59,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-this.frameCount%20-i*20)+Math.PI), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-this.frameCount%20-i*20)+Math.PI), 1,1);
+							this.ctx.drawImage2(this.bmps['PLANET'],43,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-this.frameCount%20-i*20)), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-this.frameCount%20-i*20)), 1,1);
+							this.ctx.drawImage2(this.bmps['PLANET'],59,35,1,1, window.width/2+132*Math.cos(-0.01*(this.frameCount-this.frameCount%20-i*20)+Math.PI), window.height/2-28+68*Math.sin(-0.01*(this.frameCount-this.frameCount%20-i*20)+Math.PI), 1,1);
 						}
 					}
-					this.ctx.drawImage(this.bmps['PLANET'],0,0,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount)-16/2, window.height/2-28+68*Math.sin(-0.01*this.frameCount)-16/2, 16,16);
-					this.ctx.drawImage(this.bmps['PLANET'],0,16,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount+Math.PI)-16/2, window.height/2-28+68*Math.sin(-0.01*this.frameCount+Math.PI)-16/2, 16,16);
+					this.ctx.drawImage2(this.bmps['PLANET'],0,0,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount)-16/2, window.height/2-28+68*Math.sin(-0.01*this.frameCount)-16/2, 16,16);
+					this.ctx.drawImage2(this.bmps['PLANET'],0,16,16,16, window.width/2+132*Math.cos(-0.01*this.frameCount+Math.PI)-16/2, window.height/2-28+68*Math.sin(-0.01*this.frameCount+Math.PI)-16/2, 16,16);
 					// this.drawString(126-6*(this.pushSpace.length-10)/2, window.height-24, this.pushSpace+'.'.repeat(Math.abs(this.frameCount)/30%4));
 					this.selectString = this.frameCount%20<10==0 ? '> ' : '- ';
 					this.drawString(window.width/2, window.height-48, (this.game.gameMode==0?this.selectString:'')+this.str1Player, 1,'centre');
@@ -394,9 +394,9 @@ THREE`.split('\n');
 						this.play_bgm('READY');
 						this.bgms_playing['READY'] = true;
 					}
-					this.ctx.drawImage(this.bmps['LOBBY'+((window.lang=='ja-JP')?'_JP':'')],0,0,320,240,0,0,320,240);
+					this.ctx.drawImage2(this.bmps['LOBBY'+((window.lang=='ja-JP')?'_JP':'')],0,0,320,240,0,0,320,240);
 					if(this.game.buttonDepress != null && this.frameCount < 0.5*window.fps){
-						this.ctx.drawImage(this.bmps['LOBBY'+((window.lang=='ja-JP')?'_JP':'')], 320, 21*this.game.buttonDepress, 74, 21, this.bD_rects[this.game.buttonDepress].x, this.bD_rects[this.game.buttonDepress].y, 74, 21);
+						this.ctx.drawImage2(this.bmps['LOBBY'+((window.lang=='ja-JP')?'_JP':'')], 320, 21*this.game.buttonDepress, 74, 21, this.bD_rects[this.game.buttonDepress].x, this.bD_rects[this.game.buttonDepress].y, 74, 21);
 					}
 					this.game.buttonDepress = null;
 					// this.drawString(23, 75, 'Hosts');
@@ -418,46 +418,46 @@ THREE`.split('\n');
 				case 'playing':
 				
 					if(this.game.gameMode == 3){
-						this.ctx.drawImage(this.bmps['INSTRUCTION_'+this.game.gameSubState.toString()+((window.lang=='ja-JP')?'_JP':'')], 0, 0, 320, 240, 0, 0, 320, 240);
+						this.ctx.drawImage2(this.bmps['INSTRUCTION_'+this.game.gameSubState.toString()+((window.lang=='ja-JP')?'_JP':'')], 0, 0, 320, 240, 0, 0, 320, 240);
 						break;
 					}
 					else{
 					if(this.game.disconnectTimer == true){this.ctx.filter = 'brightness(50%)';}
 					
 					for (let i=0; i<5; i++){
-						this.ctx.drawImage(this.bmps['WINMARK'], 8*(i<this.game.score[0]),0,8,8, 8,100+i*8,8,8);
-						this.ctx.drawImage(this.bmps['WINMARK'], 8*(i<this.game.score[1]),0,8,8, 304,100+i*8,8,8);
+						this.ctx.drawImage2(this.bmps['WINMARK'], 8*(i<this.game.score[0]),0,8,8, 8,100+i*8,8,8);
+						this.ctx.drawImage2(this.bmps['WINMARK'], 8*(i<this.game.score[1]),0,8,8, 304,100+i*8,8,8);
 					}
 					
-					if(!(this.game.gameSubState=='collided' && this.game.playerPos.h)){this.ctx.drawImage(this.bmps['PLANET'], (this.frameCount%6==0 && this.game.playerPos.h)?16:16*this.game.hostEmoji,0+32*(this.frameCount%6==0 && this.game.playerPos.h),16,16, this.game.playerPos.x-16/2, this.game.playerPos.y-16/2, 16,16);} //player planet. alternate with white circle after getting hit but before conclusion of the overall shot. don't draw if it has been hit and exploding animation is ongoing.
-					if(!(this.game.gameSubState=='collided' && this.game.enemyPos.h)){this.ctx.drawImage(this.bmps['PLANET'], (this.frameCount%6==0 && this.game.enemyPos.h)?16:16*this.game.guestEmoji,16+16*(this.frameCount%6==0 && this.game.enemyPos.h),16,16, this.game.enemyPos.x-16/2, this.game.enemyPos.y-16/2, 16,16);} //enemy planet
+					if(!(this.game.gameSubState=='collided' && this.game.playerPos.h)){this.ctx.drawImage2(this.bmps['PLANET'], (this.frameCount%6==0 && this.game.playerPos.h)?16:16*this.game.hostEmoji,0+32*(this.frameCount%6==0 && this.game.playerPos.h),16,16, this.game.playerPos.x-16/2, this.game.playerPos.y-16/2, 16,16);} //player planet. alternate with white circle after getting hit but before conclusion of the overall shot. don't draw if it has been hit and exploding animation is ongoing.
+					if(!(this.game.gameSubState=='collided' && this.game.enemyPos.h)){this.ctx.drawImage2(this.bmps['PLANET'], (this.frameCount%6==0 && this.game.enemyPos.h)?16:16*this.game.guestEmoji,16+16*(this.frameCount%6==0 && this.game.enemyPos.h),16,16, this.game.enemyPos.x-16/2, this.game.enemyPos.y-16/2, 16,16);} //enemy planet
 					if(this.game.gameMode !=2 || this.game.playerType=='host'){
-						this.ctx.drawImage(this.bmps['CATAPULT'], 4*(this.frameCount%10<5 && this.game.gameSubState=='ready')+1, 1, 3, 3, this.game.playerPos.x+10*Math.cos(this.game.playerAngle*Math.PI/180)-3/2, this.game.playerPos.y+10*Math.sin(this.game.playerAngle*Math.PI/180)-3/2, 3, 3); //player catapult
-						this.ctx.drawImage(this.bmps['CATAPULT'], 1, 1, 3, 3, this.game.enemyPos.x+10*Math.cos(this.game.enemyAngle*Math.PI/180)-3/2, this.game.enemyPos.y+10*Math.sin(this.game.enemyAngle*Math.PI/180)-3/2, 3, 3); //enemy catapult
+						this.ctx.drawImage2(this.bmps['CATAPULT'], 4*(this.frameCount%10<5 && this.game.gameSubState=='ready')+1, 1, 3, 3, this.game.playerPos.x+10*Math.cos(this.game.playerAngle*Math.PI/180)-3/2, this.game.playerPos.y+10*Math.sin(this.game.playerAngle*Math.PI/180)-3/2, 3, 3); //player catapult
+						this.ctx.drawImage2(this.bmps['CATAPULT'], 1, 1, 3, 3, this.game.enemyPos.x+10*Math.cos(this.game.enemyAngle*Math.PI/180)-3/2, this.game.enemyPos.y+10*Math.sin(this.game.enemyAngle*Math.PI/180)-3/2, 3, 3); //enemy catapult
 					}
 					if(this.game.gameMode ==2 && this.game.playerType=='guest'){
-						this.ctx.drawImage(this.bmps['CATAPULT'], 4*(this.frameCount%10<5 && this.game.gameSubState=='ready')+1, 1, 3, 3, this.game.enemyPos.x+10*Math.cos(this.game.enemyAngle*Math.PI/180)-3/2, this.game.enemyPos.y+10*Math.sin(this.game.enemyAngle*Math.PI/180)-3/2, 3, 3); //'enemy' catapult (guest in 2player online)
-						this.ctx.drawImage(this.bmps['CATAPULT'], 1, 1, 3, 3, this.game.playerPos.x+10*Math.cos(this.game.playerAngle*Math.PI/180)-3/2, this.game.playerPos.y+10*Math.sin(this.game.playerAngle*Math.PI/180)-3/2, 3, 3);
+						this.ctx.drawImage2(this.bmps['CATAPULT'], 4*(this.frameCount%10<5 && this.game.gameSubState=='ready')+1, 1, 3, 3, this.game.enemyPos.x+10*Math.cos(this.game.enemyAngle*Math.PI/180)-3/2, this.game.enemyPos.y+10*Math.sin(this.game.enemyAngle*Math.PI/180)-3/2, 3, 3); //'enemy' catapult (guest in 2player online)
+						this.ctx.drawImage2(this.bmps['CATAPULT'], 1, 1, 3, 3, this.game.playerPos.x+10*Math.cos(this.game.playerAngle*Math.PI/180)-3/2, this.game.playerPos.y+10*Math.sin(this.game.playerAngle*Math.PI/180)-3/2, 3, 3);
 					}
 					for(let i=0; i<this.game.playerTrail.length; i++){
-						this.ctx.drawImage(this.bmps['PLANET'], 43, 35, 1,1, this.game.playerTrail[i].x, this.game.playerTrail[i].y, 1,1); //playerMissile trail
+						this.ctx.drawImage2(this.bmps['PLANET'], 43, 35, 1,1, this.game.playerTrail[i].x, this.game.playerTrail[i].y, 1,1); //playerMissile trail
 					}
 					for(let i=0; i<this.game.enemyTrail.length; i++){
-						this.ctx.drawImage(this.bmps['PLANET'], 59, 35, 1,1, this.game.enemyTrail[i].x, this.game.enemyTrail[i].y, 1,1); //enemyMissile trail
+						this.ctx.drawImage2(this.bmps['PLANET'], 59, 35, 1,1, this.game.enemyTrail[i].x, this.game.enemyTrail[i].y, 1,1); //enemyMissile trail
 					}
-					if(this.game.playerCollided){this.ctx.drawImage(this.bmps['MISSILE'], 32+16*(this.frameCount%2),0,16,16, this.game.playerMissilePos.x-16/2,this.game.playerMissilePos.y-16/2,16,16);} //playerMissile explosion
-					if(this.game.enemyCollided){this.ctx.drawImage(this.bmps['MISSILE'], 32+16*(this.frameCount%2),0,16,16, this.game.enemyMissilePos.x-16/2,this.game.enemyMissilePos.y-16/2,16,16);} //enemyMissile explosion
+					if(this.game.playerCollided){this.ctx.drawImage2(this.bmps['MISSILE'], 32+16*(this.frameCount%2),0,16,16, this.game.playerMissilePos.x-16/2,this.game.playerMissilePos.y-16/2,16,16);} //playerMissile explosion
+					if(this.game.enemyCollided){this.ctx.drawImage2(this.bmps['MISSILE'], 32+16*(this.frameCount%2),0,16,16, this.game.enemyMissilePos.x-16/2,this.game.enemyMissilePos.y-16/2,16,16);} //enemyMissile explosion
 					for(let i=0; i<this.game.planets.length; i++){
 						let m_i = this.game.planets[i].m;
 						let h_i = this.game.planets[i].h;
-						if(!(this.game.gameSubState=='collided' && h_i-m_i>=2)){this.ctx.drawImage(this.bmps['PLANET'], 0+(16+8*m_i)*(this.frameCount%6==0 && h_i>0),32+16*m_i, 16+8*m_i,16+8*m_i, this.game.planets[i].x-8-4*m_i, this.game.planets[i].y-8-4*m_i, 16+8*m_i,16+8*m_i);} //grey planets
+						if(!(this.game.gameSubState=='collided' && h_i-m_i>=2)){this.ctx.drawImage2(this.bmps['PLANET'], 0+(16+8*m_i)*(this.frameCount%6==0 && h_i>0),32+16*m_i, 16+8*m_i,16+8*m_i, this.game.planets[i].x-8-4*m_i, this.game.planets[i].y-8-4*m_i, 16+8*m_i,16+8*m_i);} //grey planets
 					}
 					
 					if(this.game.justStartedPlaying && this.game.gameMode==2){
 						let t = this.frameCount/(1.5*window.fps); //cool nameplate sliding up animation
 						t = Math.min(0.5+8*t,1);
-						this.ctx.drawImage(this.bmps['NAMEPLATE'], 0,0,64,t*24, this.game.playerPos.x-64/2, this.game.playerPos.y-16/2-t*24, 64,t*24)
-						this.ctx.drawImage(this.bmps['NAMEPLATE'], 0,0,64,t*24, this.game.enemyPos.x-64/2, this.game.enemyPos.y-16/2-t*24, 64,t*24);
+						this.ctx.drawImage2(this.bmps['NAMEPLATE'], 0,0,64,t*24, this.game.playerPos.x-64/2, this.game.playerPos.y-16/2-t*24, 64,t*24)
+						this.ctx.drawImage2(this.bmps['NAMEPLATE'], 0,0,64,t*24, this.game.enemyPos.x-64/2, this.game.enemyPos.y-16/2-t*24, 64,t*24);
 						this.ctx.font = '9px courier new';
 						this.ctx.textAlign = 'center';
 						this.ctx.fillText(this.game.hostName, this.game.playerPos.x, this.game.playerPos.y-16/2-24/2); //12 letters fit in the nameplate at 9px courier new
@@ -491,7 +491,7 @@ THREE`.split('\n');
 						if(this.frameCount%(0.5*window.fps)==0 && this.frameCount!=0){
 							this.sfxs['THREE'].play();
 						}
-						this.ctx.drawImage(this.bmps['THREE'], 16*(~~(this.frameCount/(0.5*window.fps))-1), 0, 16, 16, window.width/2-16/2, window.height/2-16/2, 16, 16);
+						this.ctx.drawImage2(this.bmps['THREE'], 16*(~~(this.frameCount/(0.5*window.fps))-1), 0, 16, 16, window.width/2-16/2, window.height/2-16/2, 16, 16);
 					}
 					
 					if(this.game.gameSubState == 'flying') {
@@ -500,8 +500,8 @@ THREE`.split('\n');
 							this.play_bgm('FLYING');
 							this.bgms_playing['FLYING'] = true;
 						}
-						if(!this.game.playerCollided){this.ctx.drawImage(this.bmps['MISSILE'], 3+8*(this.frameCount>5*window.fps)+8*(this.frameCount>10*window.fps), 3, 3, 3, this.game.playerMissilePos.x-3/2, this.game.playerMissilePos.y-3/2, 3, 3);}
-						if(!this.game.enemyCollided){this.ctx.drawImage(this.bmps['MISSILE'], 3+8*(this.frameCount>5*window.fps)+8*(this.frameCount>10*window.fps), 3, 3, 3, this.game.enemyMissilePos.x-3/2, this.game.enemyMissilePos.y-3/2, 3, 3);}
+						if(!this.game.playerCollided){this.ctx.drawImage2(this.bmps['MISSILE'], 3+8*(this.frameCount>5*window.fps)+8*(this.frameCount>10*window.fps), 3, 3, 3, this.game.playerMissilePos.x-3/2, this.game.playerMissilePos.y-3/2, 3, 3);}
+						if(!this.game.enemyCollided){this.ctx.drawImage2(this.bmps['MISSILE'], 3+8*(this.frameCount>5*window.fps)+8*(this.frameCount>10*window.fps), 3, 3, 3, this.game.enemyMissilePos.x-3/2, this.game.enemyMissilePos.y-3/2, 3, 3);}
 					}
 					
 					if(this.game.gameSubState == 'collided') {
@@ -513,7 +513,7 @@ THREE`.split('\n');
 								if(!this.muteSFX['EXPLODE']){this.sfxs['EXPLODE'].play();}
 								this.muteSFX['EXPLODE'] = true;
 								for(let j=0; j<5; j++){ //5 exploding bits
-									this.ctx.drawImage(this.bmps['PLANET'], 64,32+8*(this.frameCount%10<5), 8,8, this.game.planets[i].x-0.4*this.frameCount*Math.cos(j*2*Math.PI/5+Math.PI/2), this.game.planets[i].y-0.4*this.frameCount*Math.sin(j*2*Math.PI/5+Math.PI/2), 8,8);
+									this.ctx.drawImage2(this.bmps['PLANET'], 64,32+8*(this.frameCount%10<5), 8,8, this.game.planets[i].x-0.4*this.frameCount*Math.cos(j*2*Math.PI/5+Math.PI/2), this.game.planets[i].y-0.4*this.frameCount*Math.sin(j*2*Math.PI/5+Math.PI/2), 8,8);
 								}
 							}
 						}
@@ -521,25 +521,25 @@ THREE`.split('\n');
 							if(!this.muteSFX['EXPLODE']){this.sfxs['EXPLODE'].play();}
 							this.muteSFX['EXPLODE'] = true;
 							for(let j=0; j<5; j++){
-								this.ctx.drawImage(this.bmps['PLANET'], 32,32+8*(this.frameCount%10<5), 8,8, this.game.playerPos.x-0.4*this.frameCount*Math.cos(j*2*Math.PI/5+Math.PI/2)-8/2, this.game.playerPos.y-0.4*this.frameCount*Math.sin(j*2*Math.PI/5+Math.PI/2)-8/2, 8,8);
+								this.ctx.drawImage2(this.bmps['PLANET'], 32,32+8*(this.frameCount%10<5), 8,8, this.game.playerPos.x-0.4*this.frameCount*Math.cos(j*2*Math.PI/5+Math.PI/2)-8/2, this.game.playerPos.y-0.4*this.frameCount*Math.sin(j*2*Math.PI/5+Math.PI/2)-8/2, 8,8);
 							}
 						}
 						if(this.game.enemyPos.h){
 							if(!this.muteSFX['EXPLODE']){this.sfxs['EXPLODE'].play();}
 							this.muteSFX['EXPLODE'] = true;
 							for(let j=0; j<5; j++){
-								this.ctx.drawImage(this.bmps['PLANET'], 48,32+8*(this.frameCount%10<5), 8,8, this.game.enemyPos.x-0.4*this.frameCount*Math.cos(j*2*Math.PI/5+Math.PI/2)-8/2, this.game.enemyPos.y-0.4*this.frameCount*Math.sin(j*2*Math.PI/5+Math.PI/2)-8/2, 8,8);
+								this.ctx.drawImage2(this.bmps['PLANET'], 48,32+8*(this.frameCount%10<5), 8,8, this.game.enemyPos.x-0.4*this.frameCount*Math.cos(j*2*Math.PI/5+Math.PI/2)-8/2, this.game.enemyPos.y-0.4*this.frameCount*Math.sin(j*2*Math.PI/5+Math.PI/2)-8/2, 8,8);
 							}
 						}
 						if(window.lang != 'ja-JP'){
-							if(this.game.resultString=='1hit'){this.ctx.drawImage(this.bmps['RESULT'], 0,4,40,16, window.width/2-40/2,window.height/2-16/2,40,16);}
-							if(this.game.resultString=='miss'){this.ctx.drawImage(this.bmps['RESULT'], 0,28,68,16, window.width/2-68/2,window.height/2-16/2,68,16);}
-							if(this.game.resultString=='2hit'){this.ctx.drawImage(this.bmps['RESULT'], 0,52,68,16, window.width/2-68/2,window.height/2-16/2,68,16);}
+							if(this.game.resultString=='1hit'){this.ctx.drawImage2(this.bmps['RESULT'], 0,4,40,16, window.width/2-40/2,window.height/2-16/2,40,16);}
+							if(this.game.resultString=='miss'){this.ctx.drawImage2(this.bmps['RESULT'], 0,28,68,16, window.width/2-68/2,window.height/2-16/2,68,16);}
+							if(this.game.resultString=='2hit'){this.ctx.drawImage2(this.bmps['RESULT'], 0,52,68,16, window.width/2-68/2,window.height/2-16/2,68,16);}
 						}
 						if(window.lang == 'ja-JP'){
-							if(this.game.resultString=='1hit'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,0,192,20, window.width/2-192/2,window.height/2-20/2,192,20);}
-							if(this.game.resultString=='miss'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,24,192,20, window.width/2-192/2,window.height/2-20/2,192,20);}
-							if(this.game.resultString=='2hit'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0,48,192,20, window.width/2-192/2,window.height/2-20/2,192,20);}
+							if(this.game.resultString=='1hit'){this.ctx.drawImage2(this.bmps['RESULT_JP'], 0,0,192,20, window.width/2-192/2,window.height/2-20/2,192,20);}
+							if(this.game.resultString=='miss'){this.ctx.drawImage2(this.bmps['RESULT_JP'], 0,24,192,20, window.width/2-192/2,window.height/2-20/2,192,20);}
+							if(this.game.resultString=='2hit'){this.ctx.drawImage2(this.bmps['RESULT_JP'], 0,48,192,20, window.width/2-192/2,window.height/2-20/2,192,20);}
 						}
 					}
 					
@@ -550,8 +550,8 @@ THREE`.split('\n');
 							this.bgms_playing['GAMEOVER'] = true;
 						}
 						if(this.game.gameMode==0 || this.game.gameSubState=='draw'){
-							if(window.lang != 'ja-JP'){this.ctx.drawImage(this.bmps['RESULT'], 0, 72+40*(this.game.gameSubState=='lose')+80*(this.game.gameSubState=='draw'), 120, 40, window.width/2-120/2, window.height/2-40/2, 120, 40);} //win, lose, draw images. only in single player
-							if(window.lang == 'ja-JP'){this.ctx.drawImage(this.bmps['RESULT_JP'], 0, 72+40*(this.game.gameSubState=='lose')+80*(this.game.gameSubState=='draw'), 174, 40, window.width/2-174/2, window.height/2-40/2, 174, 40);}
+							if(window.lang != 'ja-JP'){this.ctx.drawImage2(this.bmps['RESULT'], 0, 72+40*(this.game.gameSubState=='lose')+80*(this.game.gameSubState=='draw'), 120, 40, window.width/2-120/2, window.height/2-40/2, 120, 40);} //win, lose, draw images. only in single player
+							if(window.lang == 'ja-JP'){this.ctx.drawImage2(this.bmps['RESULT_JP'], 0, 72+40*(this.game.gameSubState=='lose')+80*(this.game.gameSubState=='draw'), 174, 40, window.width/2-174/2, window.height/2-40/2, 174, 40);}
 						}
 						if(this.game.gameMode==1){ //2player offline mode. the 'win' and 'lose' strings are recycled to mean player1 win and player2 win respectively.
 							if(this.game.gameSubState=='win'){this.drawString(window.width/2, window.height/2, this.strPlayer+'1'+this.strWin, 2, 'centre');}
@@ -561,10 +561,10 @@ THREE`.split('\n');
 						
 						if(this.game.gameMode==2){ //2player online mode. 'win' and 'lose' means host win or guest win respectively.
 							if((this.game.gameSubState=='win'&&this.game.playerType=='host') || (this.game.gameSubState=='lose'&&this.game.playerType=='guest')){
-								this.ctx.drawImage(this.bmps['RESULT'], 0, 72, 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);
+								this.ctx.drawImage2(this.bmps['RESULT'], 0, 72, 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);
 							}
 							if((this.game.gameSubState=='lose'&&this.game.playerType=='host') || (this.game.gameSubState=='win'&&this.game.playerType=='guest')){
-								this.ctx.drawImage(this.bmps['RESULT'], 0, 112, 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);
+								this.ctx.drawImage2(this.bmps['RESULT'], 0, 112, 112, 40, window.width/2-112/2, window.height/2-40/2, 112, 40);
 							}
 							this.selectString = this.frameCount%20<10==0 ? '> ' : '- '; //copied from the title screen
 							this.drawString(window.width/2, window.height-48, this.strRematch, 1, 'centre');
@@ -597,7 +597,7 @@ THREE`.split('\n');
 					this.drawString(0,16,'ABOUT    :H');
 					if ('ontouchstart' in window) {
 						this.ctx.filter = 'brightness(50%)';
-						for(let i=0;i<3;i++){this.ctx.drawImage(this.bmps['PLANET'],0,48,24,24,80+i*82,26,68,68);} //bubbles around FGH
+						for(let i=0;i<3;i++){this.ctx.drawImage2(this.bmps['PLANET'],0,48,24,24,80+i*82,26,68,68);} //bubbles around FGH
 						this.ctx.filter = 'brightness('+(65+20*Math.floor((this.frameCount+Math.floor(60*Math.random()))%100==0)).toString()+'%)'; //randomish blinking effect on FGH
 						this.drawString(104,28,'F', 5);
 						this.drawString(104+80*1,28,'G', 5);
@@ -617,7 +617,7 @@ THREE`.split('\n');
 				this.ctx.globalAlpha = 0.12;
 				this.drawString(8, window.height-16, 'Z');
 				if(this.game.gameState != 'escmenu'){
-					// this.ctx.drawImage(this.bmps['PLANET'],0,32,16,16,0,0,32,32);
+					// this.ctx.drawImage2(this.bmps['PLANET'],0,32,16,16,0,0,32,32);
 					this.drawString(8, 10, 'Esc');
 				}
 				if(this.game.gameState=='startscreen' || (this.game.gameMode==2 && ['win', 'lose', 'draw'].includes(this.game.gameSubState))){
