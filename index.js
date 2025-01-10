@@ -7,12 +7,12 @@ const { Server } = require('socket.io');
 require('events').EventEmitter.defaultMaxListeners = 15; //more than 10 makes it think there's a memory leak. idk if there really is?
 
 const app = express();
-app.use(function (req, res, next) {
-	res.setHeader('Access-Control-Allow-Origin', '*');
-	res.setHeader('Access-Control-Request-Method', '*');
-	res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-	res.setHeader('Access-Control-Allow-Headers', '*');
-});
+// app.use(function (req, res, next) {
+	// res.setHeader('Access-Control-Allow-Origin', '*');
+	// res.setHeader('Access-Control-Request-Method', '*');
+	// res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+	// res.setHeader('Access-Control-Allow-Headers', '*');
+// });
 
 const server = createServer(app);
 // const io = new Server(server);
