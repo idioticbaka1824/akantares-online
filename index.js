@@ -1,4 +1,5 @@
 const express = require('express');
+var cors = require('cors')
 const { createServer } = require('node:http');
 const { join } = require('node:path');
 const { Server } = require('socket.io');
@@ -6,6 +7,7 @@ const { Server } = require('socket.io');
 require('events').EventEmitter.defaultMaxListeners = 15; //more than 10 makes it think there's a memory leak. idk if there really is?
 
 const app = express();
+app.use(cors())
 const server = createServer(app);
 // const io = new Server(server);
 const io = new Server(server, {
