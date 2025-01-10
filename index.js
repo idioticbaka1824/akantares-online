@@ -3,7 +3,7 @@ const { createServer } = require('node:http');
 const { join } = require('node:path');
 const { Server } = require('socket.io');
 
-// const cors = require("cors");
+const cors = require("cors");
 // const corsOptions ={
    // origin:'*', 
    // credentials:true,            //access-control-allow-credentials:true
@@ -13,26 +13,15 @@ const { Server } = require('socket.io');
 require('events').EventEmitter.defaultMaxListeners = 15; //more than 10 makes it think there's a memory leak. idk if there really is?
 
 const app = express();
-// app.use(cors());
-// app.use(cors(corsOptions));
-// app.use(function (req, res, next) {
-	// res.setHeader('Access-Control-Allow-Origin', '*');
-	// res.setHeader('Access-Control-Request-Method', '*');
-	// res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-	// res.setHeader('Access-Control-Allow-Headers', '*');
-	// res.setHeader('Access-Control-Allow-Headers', req.header.origin);
-// });
-// app.use(cors({
-    // origin: 'http://localhost:3000', // use your actual domain name (or localhost), using * is not recommended
-    // methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
-    // allowedHeaders: ['Content-Type', 'Origin', 'X-Requested-With', 'Accept', 'x-client-key', 'x-client-token', 'x-client-secret', 'Authorization'],
-    // credentials: true
-// }));
 
 const server = createServer(app);
 // const io = new Server(server);
 const io = new Server(server, {
-  connectionStateRecovery: {}
+  connectionStateRecovery: {},
+  cors: {
+    origin: "*",
+    credentials: true
+  }
 });
 
 
