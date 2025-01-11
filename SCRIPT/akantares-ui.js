@@ -36,6 +36,8 @@
                 this.canvas.addEventListener('touchend', this.onTouchEnd.bind(this));
 				
 				this.pushSpace = 'Press Anywhere';
+				
+				this.hasSinceUpdated = null; //this thingy helps make touch more responsive. makes sure the game gets in an update between touchstart and touchend
             }
 			
 			
@@ -215,6 +217,7 @@ THREE`.split('\n');
 		}
 		
         onTouchStart(e) {
+			this.hasSinceUpdated = false;
             this.touching = true;
             this.touchX = e.touches[0].clientX - this.canvas.getBoundingClientRect().x;
             this.touchY = e.touches[0].clientY - this.canvas.getBoundingClientRect().y;
@@ -258,18 +261,21 @@ THREE`.split('\n');
             this.touching = false;
             this.touchX = 0;
             this.touchY = 0;
-			window.keysBeingPressed = {
-			'ArrowLeft': false,
-			'ArrowRight': false,
-			'ArrowUp': false,
-			'ArrowDown': false,
-			'Escape': false,
-			' ': false,
-			'f': false,
-			'g': false,
-			'k': false,
-			'z': false,
-			};
+			if(this.hasSinceUpdated){
+				window.keysBeingPressed = {
+				'ArrowLeft': false,
+				'ArrowRight': false,
+				'ArrowUp': false,
+				'ArrowDown': false,
+				'Escape': false,
+				' ': false,
+				'f': false,
+				'g': false,
+				'k': false,
+				'z': false,
+				};
+				this.hasSinceUpdated = false;
+			}
         }
         
 

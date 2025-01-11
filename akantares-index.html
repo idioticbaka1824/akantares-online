@@ -339,7 +339,7 @@ socket.on('start playing', (session) => { //this code is copied from akantares.j
 	game.previousGameState = 'playing';
 	emojiInit();
 });
-socket.on('disconnect event', (msg) => { //this code leads to a condition in update() in akantares.js where the restart code is copied from the case where you restart by pressing 'g' at the start menu
+socket.on('disconnect event', (msg) => { //this code leads to a condition in update() in akantares.js where the restart code is copied from the case where you restart by pressing 'g' at the esc menu
     game.disconnectTimer = true;
 	ui.frameCount = 2*window.fps; //in conjunction with checking for >3*fps in akantares.js, this avoids the re-popping up of the 'please take your shot' text when a disconnect happens
 });

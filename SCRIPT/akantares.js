@@ -221,6 +221,8 @@
 		
         update() {
 			
+			ui.hasSinceUpdated = true;
+			
 			this.keyHandling(window.keysBeingPressed);
 			
 			switch(this.gameState){
