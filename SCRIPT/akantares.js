@@ -509,12 +509,14 @@
 						}
 						else if(this.gameMode == 2){
 							let input = null;
-							do{input = window.prompt('Please enter your name: ');} while(input == null || input == "" ); //make sure they enter some or the other name
-							this.playerName = input.substring(0,12); //names are capped at 12 characters to fit in the column in the lobby
-							this.gameState = 'lobby';
-							this.previousGameState = 'lobby';
-							socket.emit('reload event', null); //to display available hosts as soon as you enter lobby (pretend you entered and immediately hit reload)
-							document.getElementById('lobbyList').style.visibility = 'visible';
+							input = window.prompt('Please enter your name: ');
+							if(input != null && input != "" ){ //if they don't enter anything, don't take them to the lobby
+								this.playerName = input.substring(0,12); //names are capped at 12 characters to fit in the column in the lobby
+								this.gameState = 'lobby';
+								this.previousGameState = 'lobby';
+								socket.emit('reload event', null); //to display available hosts as soon as you enter lobby (pretend you entered and immediately hit reload)
+								document.getElementById('lobbyList').style.visibility = 'visible';
+							}
 						}
 						this.readyFadeIn(); //fade-in animation
 					}
