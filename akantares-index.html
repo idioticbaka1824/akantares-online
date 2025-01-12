@@ -138,7 +138,8 @@
 			
 	</div>
 	</div>
-
+	
+	<script>var socket = null;</script>
 	<script type="text/javascript" src="akantares.js"></script>
     <script type="text/javascript" src="akantares-ui.js"></script>
 
@@ -241,6 +242,18 @@
 				<!-- document.getElementById('emoji-select').appendChild(opt); -->
 			<!-- } -->
 			
+			window.addEventListener('online', (e) => 
+				<!-- console.log(e, "you're online") -->
+				game.lobbyString = 'strNull'
+			);
+			<!-- window.addEventListener('offline', (e) => console.log(e, "you're offline")); -->
+			<!-- window.onerror = function(error) {   -->
+				<!-- console.log(error); -->
+				<!-- game.lobbyString = 'strError'; -->
+				<!-- console.log(game.lobbyString); -->
+				<!-- return true; -->
+			<!-- }; -->
+			
 			gameCanvas.addEventListener('mousedown', (e) => {
                 click_coords = getMousePosition(gameCanvas, e);
 				window.clickHandling(click_coords[0]/window.scale, click_coords[1]/window.scale, e=e);
@@ -265,7 +278,6 @@
 							game.lobbyString = 'strAlreadyHost';
 						}
 						else{ //the same 'person' can't host multiple games
-							game.playerType = 'host';
 							let newSession = {hostName:game.playerName, guestName:null, time:new Date(Date.now()), hostID:null, guestID:null};
 							socket.emit('hosting event', newSession);
 						}
@@ -292,7 +304,12 @@
 
 <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
 <script>
-const socket = io.connect("https://akantares.onrender.com/");
+var socket = io.connect("https://akantares.onrender.com/");
+
+socket.on("connect_error", (err) => {
+  game.lobbyString = 'strError';
+});
+
 socket.on('connect', function() {
 	game.mySocketID = socket.id;
 });
@@ -319,6 +336,7 @@ socket.on('hosting event', (sessions) => {
     game.sessions = sessions;
 	refreshLobby(sessions);
 	game.myHostID = game.mySocketID;
+	game.playerType = 'host';
 });
 socket.on('reload event', (sessions) => {
     game.sessions = sessions;

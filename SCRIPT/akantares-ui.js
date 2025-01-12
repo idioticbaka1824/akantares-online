@@ -131,9 +131,12 @@ THREE`.split('\n');
 			this.str2PlayerOnline = 'Multiplayer (Online)';
 			this.strInstructions = 'Instructions';
 			
+			this.strEnterName = 'Please enter your name: ';
 			this.strAlreadyHost = 'You are already a host';
 			this.strSelectSession = 'Please select a host from the list';
 			this.strOwnGame = 'You cannot join your own game';
+			this.strSocketError = 'Could not access Socket.io';
+			this.strError = 'Could not connect to server';
 			this.strPlayerFace = 'Player face:';
 			this.strChat = 'Chat:';
 			this.strSend = 'Send';
@@ -161,9 +164,12 @@ THREE`.split('\n');
 				this.str2PlayerOnline = 'マルチプレイヤー　(オンライン)';
 				this.strInstructions = 'てじゅん';
 				
+				this.strEnterName = '名前を入力してください: ';
 				this.strAlreadyHost = 'もう　ホスト　です';
 				this.strSelectSession = 'なにか　せんたくして　ください';
 				this.strOwnGame = 'じぶん　の　ゲーム　は　せつぞく　できません';
+				this.strSocketError = 'Socket.io に 接続 できません でした';
+				this.strError = 'サーバー に せつぞく できません でした';
 				this.strPlayerFace = '表情:';
 				this.strChat = 'チャット:';
 				this.strSend = 'そうしん　する';
@@ -187,7 +193,7 @@ THREE`.split('\n');
 			document.getElementById('strPlayerFace').innerText = this.strPlayerFace;
 			document.getElementById('strChat').innerText = this.strChat;
 			document.getElementById('strSend').innerText = this.strSend;
-			this.lobbyStrings = {'strNull':this.strNull, 'strAlreadyHost':this.strAlreadyHost, 'strSelectSession':this.strSelectSession, 'strOwnGame':this.strOwnGame};
+			this.lobbyStrings = {'strNull':this.strNull, 'strAlreadyHost':this.strAlreadyHost, 'strSelectSession':this.strSelectSession, 'strOwnGame':this.strOwnGame, 'strError':this.strError};
 		}	
 		
 		
@@ -235,6 +241,7 @@ THREE`.split('\n');
 			window.keysBeingPressed['ArrowUp'] = (this.touchX>320-32 && this.touchY<32);
 			window.keysBeingPressed['ArrowDown'] = (this.touchX>320-32 && this.touchY>240-32);
 			this.canvas.dispatchEvent(new Event('mousedown', e.touches[0])); //simulating a click event in the lobby when on touchscreen
+			this.canvas.dispatchEvent(new Event('mouseup', e.touches[0]));
         }
 
         onTouchMove(e) { //idk if this is still needed, but im scared to get rid of it and it's not hurting

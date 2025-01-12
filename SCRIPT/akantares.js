@@ -169,7 +169,7 @@
 						}
 						while(this.playerPlanetIntersect());
 					}
-					if(this.gameMode == 2 && typeof socket !=='undefined'){socket.emit('resetPlanets event', {hostID:this.myHostID});}
+					if(this.gameMode == 2 && socket != null){socket.emit('resetPlanets event', {hostID:this.myHostID});}
 					break;
 					
 				case 'gameover':
@@ -232,6 +232,12 @@
 				
 				case 'startscreen':
 					this.justStartedPlaying = true;
+					break;
+				
+				case 'lobby':
+					if(!navigator.onLine){
+						this.lobbyString = 'strError';
+					}
 					break;
 				
 				case 'playing':
@@ -506,19 +512,25 @@
 							this.gameState = 'playing';
 							this.gameSubState = this.gameMode!=3 ? 'ready' : 1;
 							this.previousGameState = 'playing';
+							this.readyFadeIn(); //fade-in animation
 						}
 						else if(this.gameMode == 2){
 							let input = null;
-							input = window.prompt('Please enter your name: ');
-							if(input != null && input != "" ){ //if they don't enter anything, don't take them to the lobby
-								this.playerName = input.substring(0,12); //names are capped at 12 characters to fit in the column in the lobby
-								this.gameState = 'lobby';
-								this.previousGameState = 'lobby';
-								socket.emit('reload event', null); //to display available hosts as soon as you enter lobby (pretend you entered and immediately hit reload)
-								document.getElementById('lobbyList').style.visibility = 'visible';
+							if(socket != null){
+								input = window.prompt(ui.strEnterName);
+								if(input != null && input != "" ){ //if they don't enter anything, don't take them to the lobby
+									this.playerName = input.substring(0,12); //names are capped at 12 characters to fit in the column in the lobby
+									this.gameState = 'lobby';
+									this.previousGameState = 'lobby';
+									socket.emit('reload event', null); //to display available hosts as soon as you enter lobby (pretend you entered and immediately hit reload)
+									document.getElementById('lobbyList').style.visibility = 'visible';
+									this.readyFadeIn(); //fade-in animation
+								}
+							}
+							else{
+								window.alert(ui.strSocketError);
 							}
 						}
-						this.readyFadeIn(); //fade-in animation
 					}
 					break;
 				
