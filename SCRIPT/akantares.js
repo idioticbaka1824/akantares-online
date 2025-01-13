@@ -169,7 +169,7 @@
 							this.enemyPos.y = 20 + Math.floor(200*Math.random());
 						} while(this.playerPlanetIntersect());
 					}
-					if(this.gameMode == 2 && socket != null){socket.emit('resetPlanets event', {hostID:this.myHostID});}
+					if(this.gameMode == 2 && this.playerType == 'host' && socket != null){socket.emit('resetPlanets event', {hostID:this.myHostID});}
 					break;
 					
 				case 'gameover':
