@@ -107,6 +107,17 @@ io.on('connection', (socket) => {
 	});
 });
 
+//if a host clicks 'quit' while in the lobby, they should be removed from the list (this wasn't already handled by disconnect events)
+io.on('connection', (socket) => {
+	socket.on('quitting event', () => {
+		for(i=0; i<sessions.length; i++){
+			if(sessions[i].hostID==socket.id){
+				let spliced = sessions.splice(i, 1);
+				io.emit('reload event', sessions);
+			}
+		}
+	});
+});
 
 io.on('connection', (socket) => {
 	socket.on('emoji event', (obj) => {
