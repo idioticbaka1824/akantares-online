@@ -43,6 +43,7 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
 	console.log('a user connected, ' + socket.id);
+	io.emit('reload event', sessions);
 });
 
 server.listen(3000, () => {
@@ -102,18 +103,6 @@ io.on('connection', (socket) => {
 				io.to(sessions[i].hostID).emit('disconnect event', null); //let the host and guest know that one of them disconnected so they get sent back to the lobby
 				let spliced = sessions.splice(i, 1); //if host or guest disconnects, the session is removed from the lobby
 				io.emit('reload event', sessions); //refresh lobby when this disconnection happens
-			}
-		}
-	});
-});
-
-//if a host clicks 'quit' while in the lobby, they should be removed from the list (this wasn't already handled by disconnect events)
-io.on('connection', (socket) => {
-	socket.on('quitting event', () => {
-		for(i=0; i<sessions.length; i++){
-			if(sessions[i].hostID==socket.id){
-				let spliced = sessions.splice(i, 1);
-				io.emit('reload event', sessions);
 			}
 		}
 	});

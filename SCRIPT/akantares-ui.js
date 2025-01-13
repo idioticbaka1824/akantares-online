@@ -232,7 +232,7 @@ THREE`.split('\n');
 			// var x = this.touchX - window.width/2;
 			// var y = -this.touchY + window.height/2;
 			// var r = dist2(x,y);
-			window.keysBeingPressed[' '] = !(this.game.gameState=='escmenu') && !(this.touchX<32 && this.touchY<32) && !(this.touchX<32 && this.touchY>240-32) && !(this.touchX>320-32 && this.touchY<32) && !(this.touchX>320-32 && this.touchY>240-32);
+			window.keysBeingPressed[' '] = !(this.game.gameState=='lobby') && !(this.game.gameState=='escmenu') && !(this.touchX<32 && this.touchY<32) && !(this.touchX<32 && this.touchY>240-32) && !(this.touchX>320-32 && this.touchY<32) && !(this.touchX>320-32 && this.touchY>240-32);
 			window.keysBeingPressed['Escape'] = (this.touchX<32 && this.touchY<32);
 			window.keysBeingPressed['f'] = (this.touchX>60 && this.touchX<160 && this.touchY<100);
 			window.keysBeingPressed['g'] = (this.touchX>160 && this.touchX<240 && this.touchY<100);
@@ -638,6 +638,11 @@ THREE`.split('\n');
 					this.drawString(window.width-18, window.height-16-2*(this.frameCount%30<15), 'ĥ');
 				}
 				this.ctx.globalAlpha = 1;
+			}
+			
+			if(game.blankScreen){
+				this.ctx.fillStyle = '#000000';
+				this.ctx.fillRect(0, 0, width, height);
 			}
 			
 			this.frameCount += 1;

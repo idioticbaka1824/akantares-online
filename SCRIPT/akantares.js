@@ -34,7 +34,7 @@
 			this.gameMode = 2; //0,1,2 = singleplayer, multiplayer offline, multiplayer online, instructions screen
 			this.numGameModes = 4;
 			this.whoseTurn = 0; //0,1 = player1 or player2 (during 2player offline)
-			this.gameState = 'loading'; //loading, startscreen, playing, escmenu, gameover. actually, no gameover.
+			this.gameState = 'loading'; //loading, startscreen, lobby, playing, escmenu, gameover. actually, no gameover.
 			this.gameSubState = 'null'; //if gameState == 'playing', this can be 'ready', 'countdown', 'flying', 'collided', 'win','lose','draw'. otherwise it is 'null'. //update: for gameMode=3 this can be 1 or 2 for instruction pages
 			this.level = 0;
 			this.help = false;
@@ -65,6 +65,7 @@
 			//misc
 			this.score = [0,0];
 			this.justStartedPlaying = true;
+			this.blankScreen = false;
 			
 			//physics
 			this.dt = 0.05; //time step for integrating motion
@@ -252,14 +253,15 @@
 					if(ui.frameCount>1.5*window.fps){
 						this.justStartedPlaying = false;
 					}
-					if(ui.frameCount>3*window.fps){
+					if(ui.frameCount>3*window.fps){ //restart game to startscreen if disconnect occurs
 						if(this.disconnectTimer == true){
 							this.disconnectTimer = false;
 							ui.stop_bgm();
 							window.audioContext.resume();
 							this.gameState = 'startscreen';
 							this.previousGameState = 'startscreen';
-							this.readyFadeIn;
+							this.readyFadeIn();
+							clearChat();
 							document.getElementById('chat-container').style.visibility = 'hidden';
 						}
 					}
@@ -429,12 +431,13 @@
 									this.gameSubState = 'lose';
 								}
 								else{
+									if(this.resultString=='1hit' || this.resultString=='2hit'){this.blankScreen = true;}
 									this.resetStuff('shot');
 									document.getElementById('fireRange').style.visibility = 'visible';
 									document.getElementById('fireButton').disabled = false;
 									this.gameSubState = 'ready';
 									ui.frameCount = 0;
-									if(this.resultString=='1hit' || this.resultString=='2hit'){this.readyFadeIn();}
+									if(this.resultString=='1hit' || this.resultString=='2hit'){this.blankScreen = false; this.readyFadeIn();}
 								}
 							}
 			
@@ -594,6 +597,7 @@
 									window.audioContext.resume();
 									this.gameState = 'startscreen';
 									this.previousGameState = 'startscreen';
+									clearChat();
 								}
 							}
 							ekeys[' '] = false;
@@ -645,7 +649,7 @@
 						ui.frameCount = this.resumeFrame;
 						this.gameState = this.previousGameState;
 					}
-					if(ekeys['g']){
+					if(ekeys['g']){ //restart code
 						ui.frameCount = 0;
 						ui.stop_bgm();
 						window.audioContext.resume();

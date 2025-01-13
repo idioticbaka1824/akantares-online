@@ -106,7 +106,7 @@
 	<div id='chat-container' style='visibility:hidden'>
 			<span id='strPlayerFace'>Player face:</span>
 			<!-- <select id="emoji-select" onchange="socket.emit('emoji event', {hostID:game.myHostID, playerType:game.playerType, value:this.value});"></select> -->
-			<table id="emojiTable">
+			<table id="emojiTable" style='margin-bottom:0.8rem'>
 			  <tr>
 				<td><input type="image" class="button2" onclick="emojiClick(0)" id="emoji0" /></td>
 				<td><input type="image" class="button2" onclick="emojiClick(1)" id="emoji1" /></td>
@@ -128,8 +128,9 @@
 				<td><input type="image" class="button2" onclick="emojiClick(15)" id="emoji15" /></td>
 			  </tr>
 			</table>
+			<span><u id='strChat'>Chat:</u></span>
 			<ul id='chat-list'>
-			<li style='background-color:#f0f0f0'><u id='strChat'>Chat:</u></li>
+			<!-- <li style='background-color:#f0f0f0'><u id='strChat'>Chat:</u></li> -->
 			</ul>
 			<form id="chat-form" action="">
 			<input id="chat-input" autocomplete="off" />
@@ -319,16 +320,23 @@ function helloClick(){socket.emit('hello event','hello world');}
 
 function refreshLobby(sessions){
 	let lobbyList = document.getElementById('lobbyList');
-	for(i=0; i<sessions.length; i++){
-		<!-- if(sessions[i].guestID != null){ -->
-			lobbyList.remove(i);
-		<!-- } -->
+	for(let i=0; i<lobbyList.length; i++){
+		lobbyList.remove(i);
+	}
+	for(let i=0; i<sessions.length; i++){
 		if(sessions[i].guestID == null){
 			let opt = document.createElement('option');
 			opt.value = JSON.stringify(sessions[i]);
 			opt.innerHTML = sessions[i].hostName + '&nbsp'.repeat(13-sessions[i].hostName.length) + sessions[i].time.slice(11,19) + ' ' + sessions[i].time.slice(0,10);
 			lobbyList.appendChild(opt);
 		}
+	}
+}
+
+function clearChat(){
+	let chatList = document.getElementById('chat-list');
+	while(chatList.firstChild){
+		chatList.removeChild(chatList.firstChild);
 	}
 }
 
@@ -454,6 +462,7 @@ socket.on('rematch event', (rematchObj) => {
 			game.gameState = 'startscreen';
 			game.previousGameState = 'startscreen';
 			game.readyFadeIn();
+			clearChat();
 			document.getElementById('lobbyList').style.visibility = 'hidden';
 		}
 		if(game.rematch['host']&&game.rematch['guest'] == 1){ //if opponent also agrees to rematch
