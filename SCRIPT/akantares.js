@@ -181,6 +181,9 @@
 					this.guestEmoji = 0;
 					// document.getElementById('emoji-select').selectedIndex = 0;
 					this.justStartedPlaying = true;
+					this.rematch = {'host':null, 'guest':null};
+					this.rematchChoice = 1;
+					this.rematchChoiceMade = null;
 					break;
 				
 				case 'shot':
