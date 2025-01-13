@@ -169,11 +169,7 @@
 							this.enemyPos.y = 20 + Math.floor(200*Math.random());
 						} while(this.playerPlanetIntersect());
 					}
-					if(this.gameMode == 2 && socket != null){
-						socket.emit('resetPlanets event', {hostID:this.myHostID});
-							this.blankScreen = false;
-							this.readyFadeIn();
-						}
+					if(this.gameMode == 2 && socket != null){socket.emit('resetPlanets event', {hostID:this.myHostID});}
 					break;
 					
 				case 'gameover':
@@ -440,10 +436,7 @@
 									document.getElementById('fireButton').disabled = false;
 									this.gameSubState = 'ready';
 									ui.frameCount = 0;
-									if(this.gameMode != 2 && (this.resultString=='1hit' || this.resultString=='2hit')){
-										this.blankScreen = false;
-										this.readyFadeIn();
-									}
+									if(this.resultString=='1hit' || this.resultString=='2hit'){this.blankScreen = false; this.readyFadeIn();}
 								}
 							}
 			

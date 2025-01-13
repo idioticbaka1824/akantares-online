@@ -475,11 +475,11 @@ socket.on('rematch event', (rematchObj) => {
 			game.previousGameState = 'playing';
 			document.getElementById('fireRange').style.visibility = 'visible';
 		}
-		this.rematch = {'host':null, 'guest':null};
-		this.rematchChoice = 1;
-		this.rematchChoiceMade = null;
-		this.blankScreen = false;
-		this.readyFadeIn();
+		game.rematch = {'host':null, 'guest':null};
+		game.rematchChoice = 1;
+		game.rematchChoiceMade = null;
+		game.blankScreen = false;
+		game.readyFadeIn();
 	<!-- } -->
 });
 
