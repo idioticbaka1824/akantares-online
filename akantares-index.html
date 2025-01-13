@@ -29,21 +29,30 @@
 		}
 		
 		#everything-container {
+			position: absolute;
+			left: 50%;
+			transform: translate(-50%);
 			height: fit-content;
 			width: fit-content;
 		}
 		
+		#lang-radios {
+			width: fit-content;
+		}
+		
         #canvas-container {
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            padding: 0;
+			margin: auto;
+			display: block;
 			min-width: 320px;
 			min-height: 240px;
 			height: fit-content;
+			width: fit-content;
         }
 		#canvas-container canvas {
 			position: absolute;
+			left: 50%;
+			transform: translate(-50%);
 		}
 		#canvas-container select{
 			position: relative;
@@ -91,10 +100,12 @@
 <body>
     
 	<div id="everything-container">
-	<input type='radio' name='langRadio' id='langRadioEN' value='en-US' onchange='langRadioChange()'><label name='langRadio' for='langRadioEN'>English</label>
-	<input type='radio' name='langRadio' id='langRadioJP' value='ja-JP' onchange='langRadioChange()'><label name='langRadio' for='langRadioJP'>日本語</label>
-    <div id="canvas-container">
-		<div id='fireDiv' style='visibility: hidden; margin:0; padding:0; width: fit-content'>
+	<div id="canvas-container">
+		<div id="lang-radios">
+			<input type='radio' name='langRadio' id='langRadioEN' value='en-US' onchange='langRadioChange()'><label name='langRadio' for='langRadioEN'>English</label>
+			<input type='radio' name='langRadio' id='langRadioJP' value='ja-JP' onchange='langRadioChange()'><label name='langRadio' for='langRadioJP'>日本語</label>
+		</div>
+		<div id='fireDiv' style='visibility:hidden; margin:0; padding:0; width: fit-content'>
 			<span id='strDirection'>Direction:</span>
 			<input type="range" min="0" max="450" value="360" class="slider" id="fireRange" style='margin: 5px'>
 			<button id='fireButton' onclick='if(game.gameMode!=3){game.fire();}' style='margin: 5px'>Go!</button>
@@ -231,8 +242,9 @@
 			});
 			
 			function resizeSlider(){
-				document.getElementById('fireRange').style.width = document.getElementById('fireRange').getBoundingClientRect().width + gameCanvas.width - document.getElementById('fireDiv').getBoundingClientRect().width -10; //resizing firing slider and stuff to maintain the same width as the game canvas
+				document.getElementById('fireRange').style.width = gameCanvas.width - document.getElementById('strDirection').getBoundingClientRect().width - document.getElementById('fireButton').getBoundingClientRect().width -30; //resizing firing slider and stuff to maintain the same width as the game canvas
 			}
+			resizeSlider();
 			document.addEventListener('orientationchange', resizeSlider());
 			
 			<!-- const emojis = ['🟡','😄','🤨','😥','😌','😑','🤪','😐','😰','😃','😱','😎','😒','😡','😏','😒']; -->
@@ -365,6 +377,7 @@ socket.on('start playing', (session) => { //this code is copied from akantares.j
 	game.gameSubState = 'ready';
 	game.previousGameState = 'playing';
 	emojiInit();
+	game.readyFadeIn();
 });
 socket.on('disconnect event', (msg) => { //this code leads to a condition in update() in akantares.js where the restart code is copied from the case where you restart by pressing 'g' at the esc menu
     game.disconnectTimer = true;
