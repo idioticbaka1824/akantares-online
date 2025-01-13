@@ -455,6 +455,7 @@ socket.on('resetPlanets event', (resetPlanetsObj) => {
 socket.on('rematch event', (rematchObj) => {
 	game.rematch[rematchObj.playerType] = rematchObj.msg;
 	<!-- if(rematchObj.playerType != game.playerType){ -->
+		this.blankScreen = true;
 		if(game.rematch['host']&&game.rematch['guest'] == 0){ //if opponent refuses
 			ui.frameCount = 0; //copied from restart game code
 			ui.stop_bgm();
@@ -474,6 +475,11 @@ socket.on('rematch event', (rematchObj) => {
 			game.previousGameState = 'playing';
 			document.getElementById('fireRange').style.visibility = 'visible';
 		}
+		this.rematch = {'host':null, 'guest':null};
+		this.rematchChoice = 1;
+		this.rematchChoiceMade = null;
+		this.blankScreen = false;
+		this.readyFadeIn();
 	<!-- } -->
 });
 

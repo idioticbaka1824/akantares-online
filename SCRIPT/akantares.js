@@ -169,7 +169,11 @@
 							this.enemyPos.y = 20 + Math.floor(200*Math.random());
 						} while(this.playerPlanetIntersect());
 					}
-					if(this.gameMode == 2 && socket != null){socket.emit('resetPlanets event', {hostID:this.myHostID});}
+					if(this.gameMode == 2 && socket != null){
+						socket.emit('resetPlanets event', {hostID:this.myHostID});
+							this.blankScreen = false;
+							this.readyFadeIn();
+						}
 					break;
 					
 				case 'gameover':
@@ -436,7 +440,10 @@
 									document.getElementById('fireButton').disabled = false;
 									this.gameSubState = 'ready';
 									ui.frameCount = 0;
-									if(this.resultString=='1hit' || this.resultString=='2hit'){this.blankScreen = false; this.readyFadeIn();}
+									if(this.gameMode != 2 && (this.resultString=='1hit' || this.resultString=='2hit')){
+										this.blankScreen = false;
+										this.readyFadeIn();
+									}
 								}
 							}
 			
@@ -597,6 +604,9 @@
 									this.gameState = 'startscreen';
 									this.previousGameState = 'startscreen';
 									clearChat();
+									this.rematch = {'host':null, 'guest':null};
+									this.rematchChoice = 1;
+									this.rematchChoiceMade = null;
 								}
 							}
 							ekeys[' '] = false;
