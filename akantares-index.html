@@ -283,6 +283,7 @@
 						}
 					}
 					if(x>226 && x<226+76 && y>206 && y<206+22){ //quit
+						socket.disconnect();
 						ui.frameCount = 0; //copied from restart game code
 						game.buttonDepress = 2;
 						ui.stop_bgm();

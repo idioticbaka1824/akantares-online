@@ -241,10 +241,9 @@ THREE`.split('\n');
 			window.keysBeingPressed['ArrowUp'] = (this.touchX>320-32 && this.touchY<32);
 			window.keysBeingPressed['ArrowDown'] = (this.touchX>320-32 && this.touchY>240-32);
 			this.canvas.dispatchEvent(new Event('mousedown', e.touches[0])); //simulating a click event in the lobby when on touchscreen
-			this.canvas.dispatchEvent(new Event('mouseup', e.touches[0]));
         }
 
-        onTouchMove(e) { //idk if this is still needed, but im scared to get rid of it and it's not hurting
+        onTouchMove(e) { //idk if this is still needed, but im scared to get rid of it and it's not hurting. inherited from organya-js and jiljil-js
             if (this.touching) {
                 e.preventDefault();
 				window.keysBeingPressed[' '] = false;
