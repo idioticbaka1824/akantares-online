@@ -167,8 +167,7 @@
 							this.enemyPos.x = 320-25 - Math.floor(65*Math.random());
 							this.playerPos.y = 20 + Math.floor(200*Math.random());
 							this.enemyPos.y = 20 + Math.floor(200*Math.random());
-						}
-						while(this.playerPlanetIntersect());
+						} while(this.playerPlanetIntersect());
 					}
 					if(this.gameMode == 2 && socket != null){socket.emit('resetPlanets event', {hostID:this.myHostID});}
 					break;
