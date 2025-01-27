@@ -112,7 +112,7 @@
 		</div>
 		<!-- <br> -->
         <canvas id="game-canvas" style='image-rendering: pixelated'></canvas>
-		<select id="lobbyList" size=6 style='visibility:hidden'></select>	
+		<select id="lobbyList" size=6 style='visibility:hidden'></select>
     </div>
 	<div id='chat-container' style='visibility:hidden'>
 			<span id='strPlayerFace'>Player face:</span>
@@ -245,6 +245,7 @@
 				document.getElementById('fireRange').style.width = gameCanvas.width - document.getElementById('strDirection').getBoundingClientRect().width - document.getElementById('fireButton').getBoundingClientRect().width -30; //resizing firing slider and stuff to maintain the same width as the game canvas
 			}
 			resizeSlider();
+			canvasContainer.style.height = gameCanvas.height + document.getElementById('fireDiv').offsetHeight + document.getElementById('lang-radios').offsetHeight; //there has to be a css way to do this???
 			document.addEventListener('orientationchange', resizeSlider());
 			
 			<!-- const emojis = ['🟡','😄','🤨','😥','😌','😑','🤪','😐','😰','😃','😱','😎','😒','😡','😏','😒']; -->
