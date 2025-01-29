@@ -492,11 +492,14 @@ THREE`.split('\n');
 						if(this.game.gameMode == 1){this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlayer+(1+this.game.whoseTurn).toString()+this.strTurn+'.'.repeat(Math.abs(this.frameCount)/30%4));}
 						if(this.game.gameMode == 2){
 							if((this.game.playerType=='host' && this.game.hostFired==false) || (this.game.playerType=='guest' && this.game.guestFired==false)){
-								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlsShoot+'.'.repeat(Math.abs(this.frameCount)/30%4));
+								if((this.game.playerType=='host' && this.game.guestFired==false) || (this.game.playerType=='guest' && this.game.hostFired==false)){
+									this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlsShoot+'.'.repeat(Math.abs(this.frameCount)/30%4));
+								}
+								else if((this.game.playerType=='host' && this.game.guestFired==true) || (this.game.playerType=='guest' && this.game.hostFired==true)){
+									this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strHurryUp+((Math.abs(this.frameCount)/15%2)?'!':''));
+								}
 							}
-							else if((this.game.playerType=='host' && this.game.guestFired==true) || (this.game.playerType=='guest' && this.game.hostFired==true)){
-								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strHurryUp+((Math.abs(this.frameCount)/15%2)?'!':''));
-							}
+							
 							if((this.game.playerType=='host' && this.game.hostFired==true && this.game.guestFired==false) || (this.game.playerType=='guest' && this.game.guestFired==true && this.game.hostFired==false)){
 								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strWaiting+'.'.repeat(Math.abs(this.frameCount)/30%4));
 							}
@@ -557,7 +560,7 @@ THREE`.split('\n');
 									playerMarkerFramerect = [6,27,6,6];
 								}
 							}
-							this.ctx.drawImage2(this.bmps['MISSILE'], playerMarkerFramerect[0], playerMarkerFramerect[1], playerMarkerFramerect[2], playerMarkerFramerect[3], clamp(this.game.playerMissilePos.x-3,0,window.width), clamp(this.game.playerMissilePos.y-3,0,window.height), playerMarkerFramerect[2], playerMarkerFramerect[3]);
+							this.ctx.drawImage2(this.bmps['MISSILE'], playerMarkerFramerect[0], playerMarkerFramerect[1], playerMarkerFramerect[2], playerMarkerFramerect[3], clamp(this.game.playerMissilePos.x-3,0,window.width-6), clamp(this.game.playerMissilePos.y-3,0,window.height-6), playerMarkerFramerect[2], playerMarkerFramerect[3]);
 						}
 						if(!this.game.enemyCollided){
 							this.ctx.drawImage2(this.bmps['MISSILE'], 3+8*(this.frameCount>5*window.fps)+8*(this.frameCount>10*window.fps), 3, 3, 3, this.game.enemyMissilePos.x-3/2, this.game.enemyMissilePos.y-3/2, 3, 3);
@@ -595,7 +598,7 @@ THREE`.split('\n');
 									enemyMarkerFramerect = [18,27,6,6];
 								}
 							}
-							this.ctx.drawImage2(this.bmps['MISSILE'], enemyMarkerFramerect[0], enemyMarkerFramerect[1], enemyMarkerFramerect[2], enemyMarkerFramerect[3], clamp(this.game.enemyMissilePos.x-3,0,window.width), clamp(this.game.enemyMissilePos.y-3,0,window.height), enemyMarkerFramerect[2], enemyMarkerFramerect[3]);
+							this.ctx.drawImage2(this.bmps['MISSILE'], enemyMarkerFramerect[0], enemyMarkerFramerect[1], enemyMarkerFramerect[2], enemyMarkerFramerect[3], clamp(this.game.enemyMissilePos.x-3,0,window.width-6), clamp(this.game.enemyMissilePos.y-3,0,window.height-6), enemyMarkerFramerect[2], enemyMarkerFramerect[3]);
 						}
 					}
 					
