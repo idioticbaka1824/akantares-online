@@ -235,6 +235,19 @@
 				if (document.visibilityState != 'visible') {
 					window.audioContext.suspend();
 					if(game.gameMode!=2){game.gameState = 'escmenu';} //no pausing in online games
+					window.keysBeingPressed = { //in case someone holds a key down and then shifts to a different window, this will prevent weird stuff from happening
+					'ArrowLeft': false,
+					'ArrowRight': false,
+					'ArrowUp': false,
+					'ArrowDown': false,
+					'Escape': false,
+					' ': false,
+					'f': false,
+					'g': false,
+					'k': false,
+					'z': false,
+					'Shift': false
+					};
 				}
 				if (document.visibilityState == 'visible') {
 					window.audioContext.resume();

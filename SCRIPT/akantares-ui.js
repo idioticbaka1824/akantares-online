@@ -496,7 +496,7 @@ THREE`.split('\n');
 									this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlsShoot+'.'.repeat(Math.abs(this.frameCount)/30%4));
 								}
 								else if((this.game.playerType=='host' && this.game.guestFired==true) || (this.game.playerType=='guest' && this.game.hostFired==true)){
-									this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strHurryUp+((Math.abs(this.frameCount)/15%2)?'!':''));
+									this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strHurryUp+((Math.abs(this.frameCount)/30%4)<2?'!':''));
 								}
 							}
 							
