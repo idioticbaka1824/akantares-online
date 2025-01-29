@@ -7,6 +7,10 @@
 	function abs(x){
 		return x>0 ? x : -1*x;
 	}
+	//utility function to force a number to within an allowed interval
+	function clamp(number, min, max) {
+		return Math.max(min, Math.min(number, max));
+	}
 	//pythagoras
 	function dist2(dx, dy){
 		return (dx**2 + dy**2)**0.5;
@@ -490,8 +494,8 @@ THREE`.split('\n');
 							if((this.game.playerType=='host' && this.game.hostFired==false) || (this.game.playerType=='guest' && this.game.guestFired==false)){
 								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlsShoot+'.'.repeat(Math.abs(this.frameCount)/30%4));
 							}
-							if((this.game.playerType=='host' && this.game.guestFired==true) || (this.game.playerType=='guest' && this.game.hostFired==true)){
-								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strHurryUp+((Math.abs(this.frameCount)/30%2)?'!':''));
+							else if((this.game.playerType=='host' && this.game.guestFired==true) || (this.game.playerType=='guest' && this.game.hostFired==true)){
+								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strHurryUp+((Math.abs(this.frameCount)/15%2)?'!':''));
 							}
 							if((this.game.playerType=='host' && this.game.hostFired==true && this.game.guestFired==false) || (this.game.playerType=='guest' && this.game.guestFired==true && this.game.hostFired==false)){
 								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strWaiting+'.'.repeat(Math.abs(this.frameCount)/30%4));
@@ -517,8 +521,82 @@ THREE`.split('\n');
 							this.play_bgm('FLYING');
 							this.bgms_playing['FLYING'] = true;
 						}
-						if(!this.game.playerCollided){this.ctx.drawImage2(this.bmps['MISSILE'], 3+8*(this.frameCount>5*window.fps)+8*(this.frameCount>10*window.fps), 3, 3, 3, this.game.playerMissilePos.x-3/2, this.game.playerMissilePos.y-3/2, 3, 3);}
-						if(!this.game.enemyCollided){this.ctx.drawImage2(this.bmps['MISSILE'], 3+8*(this.frameCount>5*window.fps)+8*(this.frameCount>10*window.fps), 3, 3, 3, this.game.enemyMissilePos.x-3/2, this.game.enemyMissilePos.y-3/2, 3, 3);}
+						if(!this.game.playerCollided){
+							this.ctx.drawImage2(this.bmps['MISSILE'], 3+8*(this.frameCount>5*window.fps)+8*(this.frameCount>10*window.fps), 3, 3, 3, this.game.playerMissilePos.x-3/2, this.game.playerMissilePos.y-3/2, 3, 3);
+							
+							let playerMarkerFramerect = [0,0,0,0];
+							if(this.game.playerMissilePos.x>0 && this.game.playerMissilePos.x<window.width){
+								if(this.game.playerMissilePos.y<0){ //out of bounds, above
+									playerMarkerFramerect = [5,10,5,6];
+								}
+								if(this.game.playerMissilePos.y>window.height){ //below
+									playerMarkerFramerect = [0,10,5,6];
+								}
+							}
+							if(this.game.playerMissilePos.y>0 && this.game.playerMissilePos.y<window.height){
+								if(this.game.playerMissilePos.x<0){ //left
+									playerMarkerFramerect = [0,16,6,5];
+								}
+								if(this.game.playerMissilePos.x>window.width){ //right
+									playerMarkerFramerect = [6,16,6,5];
+								}
+							}
+							if(this.game.playerMissilePos.x<0){
+								if(this.game.playerMissilePos.y<0){ //top left
+									playerMarkerFramerect = [0,21,6,6];
+								}
+								if(this.game.playerMissilePos.y>window.height){ //bottom right
+									playerMarkerFramerect = [0,27,6,6];
+								}
+							}
+							if(this.game.playerMissilePos.x>window.width){
+								if(this.game.playerMissilePos.y<0){ //top right
+									playerMarkerFramerect = [6,21,6,6];
+								}
+								if(this.game.playerMissilePos.y>window.height){ //bottom right
+									playerMarkerFramerect = [6,27,6,6];
+								}
+							}
+							this.ctx.drawImage2(this.bmps['MISSILE'], playerMarkerFramerect[0], playerMarkerFramerect[1], playerMarkerFramerect[2], playerMarkerFramerect[3], clamp(this.game.playerMissilePos.x-3,0,window.width), clamp(this.game.playerMissilePos.y-3,0,window.height), playerMarkerFramerect[2], playerMarkerFramerect[3]);
+						}
+						if(!this.game.enemyCollided){
+							this.ctx.drawImage2(this.bmps['MISSILE'], 3+8*(this.frameCount>5*window.fps)+8*(this.frameCount>10*window.fps), 3, 3, 3, this.game.enemyMissilePos.x-3/2, this.game.enemyMissilePos.y-3/2, 3, 3);
+							
+							let enemyMarkerFramerect = [0,0,0,0];
+							if(this.game.enemyMissilePos.x>0 && this.game.enemyMissilePos.x<window.width){
+								if(this.game.enemyMissilePos.y<0){ //out of bounds, above
+									enemyMarkerFramerect = [17,10,5,6];
+								}
+								if(this.game.enemyMissilePos.y>window.height){ //below
+									enemyMarkerFramerect = [12,10,5,6];
+								}
+							}
+							if(this.game.enemyMissilePos.y>0 && this.game.enemyMissilePos.y<window.height){
+								if(this.game.enemyMissilePos.x<0){ //left
+									enemyMarkerFramerect = [12,16,6,5];
+								}
+								if(this.game.enemyMissilePos.x>window.width){ //right
+									enemyMarkerFramerect = [18,16,6,5];
+								}
+							}
+							if(this.game.enemyMissilePos.x<0){
+								if(this.game.enemyMissilePos.y<0){ //top left
+									enemyMarkerFramerect = [12,21,6,6];
+								}
+								if(this.game.enemyMissilePos.y>window.height){ //bottom right
+									enemyMarkerFramerect = [12,27,6,6];
+								}
+							}
+							if(this.game.enemyMissilePos.x>window.width){
+								if(this.game.enemyMissilePos.y<0){ //top right
+									enemyMarkerFramerect = [18,21,6,6];
+								}
+								if(this.game.enemyMissilePos.y>window.height){ //bottom right
+									enemyMarkerFramerect = [18,27,6,6];
+								}
+							}
+							this.ctx.drawImage2(this.bmps['MISSILE'], enemyMarkerFramerect[0], enemyMarkerFramerect[1], enemyMarkerFramerect[2], enemyMarkerFramerect[3], clamp(this.game.enemyMissilePos.x-3,0,window.width), clamp(this.game.enemyMissilePos.y-3,0,window.height), enemyMarkerFramerect[2], enemyMarkerFramerect[3]);
+						}
 					}
 					
 					if(this.game.gameSubState == 'collided') {
