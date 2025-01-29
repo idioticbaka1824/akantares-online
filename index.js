@@ -143,6 +143,7 @@ function playerPlanetIntersect(resetPlanetsObj){
 //after a hitting shot when the planets are redrawn
 io.on('connection', (socket) => {
   socket.on('resetPlanets event', (obj) => {
+	console.log('received resetPlanets event');
 	let resetPlanetsObj = {playerPos:{h:false}, enemyPos:{h:false}, numPlanets:0, planets:[]};
 	resetPlanetsObj.numPlanets = 1+Math.floor(4*Math.random());
 	for(let i=0; i<resetPlanetsObj.numPlanets; i++){
