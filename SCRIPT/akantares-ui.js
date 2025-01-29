@@ -145,6 +145,7 @@ THREE`.split('\n');
 			this.strGo = 'Go!';
 			this.strPlsShoot = 'Please Take your shot';
 			this.strWaiting = 'Waiting for opponent';
+			this.strHurryUp = 'Hurry Up';
 			this.strPlayer = 'Player ';
 			this.strTurn = "'s turn";
 			this.strWin = ' win!'
@@ -178,6 +179,7 @@ THREE`.split('\n');
 				this.strGo = '決定';
 				this.strPlsShoot = 'ほうこう　を　きめて　ください';
 				this.strWaiting = 'てき　の　ばん';
+				this.strHurryUp = 'はやく';
 				this.strPlayer = 'プレイヤー ';
 				this.strTurn = " の　ばん";
 				this.strWin = ' の　かち!'
@@ -487,6 +489,9 @@ THREE`.split('\n');
 						if(this.game.gameMode == 2){
 							if((this.game.playerType=='host' && this.game.hostFired==false) || (this.game.playerType=='guest' && this.game.guestFired==false)){
 								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlsShoot+'.'.repeat(Math.abs(this.frameCount)/30%4));
+							}
+							if((this.game.playerType=='host' && this.game.guestFired==true) || (this.game.playerType=='guest' && this.game.hostFired==true)){
+								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strHurryUp+((Math.abs(this.frameCount)/30%2)?'!':''));
 							}
 							if((this.game.playerType=='host' && this.game.hostFired==true && this.game.guestFired==false) || (this.game.playerType=='guest' && this.game.guestFired==true && this.game.hostFired==false)){
 								this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strWaiting+'.'.repeat(Math.abs(this.frameCount)/30%4));
