@@ -140,7 +140,7 @@ THREE`.split('\n');
 			this.strSelectSession = 'Please select a host from the list';
 			this.strOwnGame = 'You cannot join your own game';
 			this.strSocketError = 'Could not access Socket.io';
-			this.strError = 'Could not connect to server';
+			this.strError = "Couldn't connect to server";
 			this.strPlayerFace = 'Player face:';
 			this.strChat = 'Chat:';
 			this.strSend = 'Send';
@@ -174,7 +174,7 @@ THREE`.split('\n');
 				this.strSelectSession = 'なにか　せんたくして　ください';
 				this.strOwnGame = 'じぶん　の　ゲーム　は　せつぞく　できません';
 				this.strSocketError = 'Socket.io に 接続 できません でした';
-				this.strError = 'サーバー に せつぞく できません でした';
+				this.strError = 'サーバーに せつぞく できませんでした';
 				this.strPlayerFace = '表情:';
 				this.strChat = 'チャット:';
 				this.strSend = 'そうしん　する';
@@ -496,7 +496,7 @@ THREE`.split('\n');
 									this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strPlsShoot+'.'.repeat(Math.abs(this.frameCount)/30%4));
 								}
 								else if((this.game.playerType=='host' && this.game.guestFired==true) || (this.game.playerType=='guest' && this.game.hostFired==true)){
-									this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strHurryUp+((Math.abs(this.frameCount)/30%4)<2?'!':''));
+									this.drawString(14, 218 + (20-2*this.frameCount)*(this.frameCount<0.2*window.fps), this.strHurryUp+((Math.abs(this.frameCount)/20%4)<2?'!':''));
 								}
 							}
 							
@@ -676,7 +676,8 @@ THREE`.split('\n');
 					
 					if(this.game.disconnectTimer == true){
 						this.ctx.filter = 'none';
-						ui.drawString(window.width/2, window.height/2, this.strDisconnect, 2, 'centre');
+						if(this.game.lobbyString == 'strError'){ui.drawString(window.width/2, window.height/2, this.strError, 2, 'centre');}
+						else{ui.drawString(window.width/2, window.height/2, this.strDisconnect, 2, 'centre');}
 					}
 					}//this end brace is for the 'if gameMode!=3' else block that i didnt bother indenting
 					

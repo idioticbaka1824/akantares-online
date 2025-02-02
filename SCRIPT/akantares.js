@@ -163,8 +163,8 @@
 							this.planets[i] = {x:30+260*Math.random(), y:20+200*Math.random(), m:(Math.random()<0.3), h:0};
 						}
 						do{
-							this.playerPos.x = 25 + Math.floor(65*Math.random());
-							this.enemyPos.x = 320-25 - Math.floor(65*Math.random());
+							this.playerPos.x = 27 + Math.floor(65*Math.random());
+							this.enemyPos.x = 320-27 - Math.floor(65*Math.random());
 							this.playerPos.y = 20 + Math.floor(200*Math.random());
 							this.enemyPos.y = 20 + Math.floor(200*Math.random());
 						} while(this.playerPlanetIntersect());
@@ -223,6 +223,17 @@
 		
 		
         update() {
+			
+			if(window.navigator.onLine == true){
+				this.lobbyString = 'strNull';
+			}
+			else{
+				if(window.navigator.onLine == false && this.lobbyString != 'strError'){
+					this.lobbyString = 'strError';
+					this.disconnectTimer = true; //see disconnectEvent function in index.html
+					ui.frameCount = 2*window.fps;
+				}
+			}
 			
 			ui.hasSinceUpdated = true;
 			
@@ -439,7 +450,7 @@
 									document.getElementById('fireButton').disabled = false;
 									this.gameSubState = 'ready';
 									ui.frameCount = 0;
-									if(this.resultString=='1hit' || this.resultString=='2hit'){this.blankScreen = false; this.readyFadeIn();}
+									if((this.resultString=='1hit' || this.resultString=='2hit') && this.gameMode!=2){this.blankScreen = false; this.readyFadeIn();}
 								}
 							}
 			
@@ -530,6 +541,7 @@
 									socket.emit('reload event', null); //to display available hosts as soon as you enter lobby (pretend you entered and immediately hit reload)
 									document.getElementById('lobbyList').style.visibility = 'visible';
 									this.readyFadeIn(); //fade-in animation
+									this.playerType = 'guest'; //to avoid hosts resetting and getting a false 'youre already a host' message later
 								}
 							}
 							else{

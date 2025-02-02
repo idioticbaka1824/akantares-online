@@ -336,6 +336,8 @@ var socket = io.connect("https://akantares.onrender.com/");
 
 socket.on("connect_error", (err) => {
   game.lobbyString = 'strError';
+  game.disconnectTimer = true; //see disconnectEvent function
+  ui.frameCount = 2*window.fps;
 });
 
 socket.on('connect', function() {
@@ -476,6 +478,8 @@ socket.on('resetPlanets event', (resetPlanetsObj) => {
 	game.planets = resetPlanetsObj.planets;
 	game.playerPos = resetPlanetsObj.playerPos;
 	game.enemyPos = resetPlanetsObj.enemyPos;
+	game.blankScreen = false;
+	game.readyFadeIn();
 });
 
 //handling rematch choice from opponent
