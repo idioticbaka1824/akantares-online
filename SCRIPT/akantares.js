@@ -224,15 +224,10 @@
 		
         update() {
 			
-			if(window.navigator.onLine == true){
-				this.lobbyString = 'strNull';
-			}
-			else{
-				if(window.navigator.onLine == false && this.lobbyString != 'strError'){
-					this.lobbyString = 'strError';
-					this.disconnectTimer = true; //see disconnectEvent function in index.html
-					ui.frameCount = 2*window.fps;
-				}
+			if(window.navigator.onLine == false && this.lobbyString != 'strError'){
+				this.lobbyString = 'strError';
+				this.disconnectTimer = true; //see disconnectEvent function in index.html
+				ui.frameCount = 2*window.fps;
 			}
 			
 			ui.hasSinceUpdated = true;

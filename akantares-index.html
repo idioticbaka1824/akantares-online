@@ -384,6 +384,7 @@ socket.on('joining event', (sessions) => {
 	refreshLobby(sessions);
 });
 socket.on('start playing', (session) => { //this code is copied from akantares.js, the case where you're playing 1player and press space at the title screen
+	game.blankScreen = true;
 	game.resetStuff('gameover');
 	window.audioContext.resume();
 	ui.sfxs['OK'].play();
@@ -393,6 +394,7 @@ socket.on('start playing', (session) => { //this code is copied from akantares.j
 	game.gameSubState = 'ready';
 	game.previousGameState = 'playing';
 	emojiInit();
+	game.blankScreen = false;
 	game.readyFadeIn();
 });
 socket.on('disconnect event', (msg) => { //this code leads to a condition in update() in akantares.js where the restart code is copied from the case where you restart by pressing 'g' at the esc menu
