@@ -224,6 +224,9 @@
 		
         update() {
 			
+			if(window.navigator.onLine == true && this.lobbyString == 'strError'){
+				this.lobbyString = 'strNull';
+			}
 			if(window.navigator.onLine == false && this.lobbyString != 'strError'){
 				this.lobbyString = 'strError';
 				this.disconnectTimer = true; //see disconnectEvent function in index.html

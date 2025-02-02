@@ -151,11 +151,11 @@ io.on('connection', (socket) => {
 	}
 	do{
 		console.log('(re)drawing...');
-		console.log(playerPlanetIntersect(resetPlanetsObj));
 		resetPlanetsObj.playerPos.x = 27 + Math.floor(65*Math.random());
 		resetPlanetsObj.enemyPos.x = 320-27 - Math.floor(65*Math.random());
 		resetPlanetsObj.playerPos.y = 20 + Math.floor(200*Math.random());
 		resetPlanetsObj.enemyPos.y = 20 + Math.floor(200*Math.random());
+		console.log(playerPlanetIntersect(resetPlanetsObj));
 	} while(playerPlanetIntersect(resetPlanetsObj));
     // console.log('resetPlanets event: ' + resetPlanetsObj);
 	io.to(obj.hostID).emit('resetPlanets event', resetPlanetsObj);
