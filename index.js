@@ -131,7 +131,7 @@ io.on('connection', (socket) => {
 
 function playerPlanetIntersect(resetPlanetsObj){
 	let out = false;
-		for(let i=0; i<resetPlanetsObj.planets.length; i++){
+		for(let i=0; i<resetPlanetsObj.numPlanets; i++){
 			let d = 4 + 8 + resetPlanetsObj.planets[i].m==0?8:12; //the 4 in front is just a little extra
 			if( (Math.abs(resetPlanetsObj.planets[i].x-resetPlanetsObj.playerPos.x)<d && Math.abs(resetPlanetsObj.planets[i].y-resetPlanetsObj.playerPos.y)<d) || (Math.abs(resetPlanetsObj.planets[i].x-resetPlanetsObj.enemyPos.x)<d && Math.abs(resetPlanetsObj.planets[i].y-resetPlanetsObj.enemyPos.y)<d) ){
 				out = true;

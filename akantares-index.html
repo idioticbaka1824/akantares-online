@@ -290,8 +290,14 @@
 					if(x>226 && x<226+76 && y>88 && y<88+22){ //join
 						ui.frameCount = 0;
 						game.buttonDepress = 0;
-						if(document.getElementById('lobbyList').value == ''){game.lobbyString = 'strSelectSession';}
-						if(game.mySocketID == JSON.parse(document.getElementById('lobbyList').value).hostID){game.lobbyString = 'strOwnGame';}
+						if(document.getElementById('lobbyList').value == ''){
+							game.lobbyString = 'strSelectSession';
+							ui.sfxs['ERROR'].play();
+						}
+						if(game.mySocketID == JSON.parse(document.getElementById('lobbyList').value).hostID){
+							game.lobbyString = 'strOwnGame';
+							ui.sfxs['ERROR'].play();
+						}
 						if(document.getElementById('lobbyList').value != '' && game.mySocketID != JSON.parse(document.getElementById('lobbyList').value).hostID){ //something must be selected in the list, and also you cannot join your own hosted session as a guest
 							socket.emit('joining event', [document.getElementById('lobbyList').value, game.playerName]);
 							game.playerType = 'guest';
@@ -302,6 +308,7 @@
 						ui.frameCount = 0;
 						game.buttonDepress = 1;
 						if(game.playerType == 'host'){
+							ui.sfxs['ERROR'].play();
 							game.lobbyString = 'strAlreadyHost';
 						}
 						else{ //the same 'person' can't host multiple games
@@ -314,6 +321,7 @@
 						ui.frameCount = 0; //copied from restart game code
 						game.buttonDepress = 2;
 						ui.stop_bgm();
+						ui.sfxs['CANCEL'].play();
 						window.audioContext.resume();
 						game.gameState = 'startscreen';
 						game.previousGameState = 'startscreen';
@@ -471,6 +479,7 @@ socket.on('fire event', (fireObject) => {
 	if(fireObject.hostAngle!=null && game.playerType=='guest'){game.playerAngle = fireObject.hostAngle;}
 	if(fireObject.guestAngle!=null && game.playerType=='host'){game.enemyAngle = fireObject.guestAngle;}
 	game.fire('no-emit');
+	ui.frameCount = 0;
 });
 
 //resetting planets after a shot
