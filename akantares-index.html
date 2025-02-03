@@ -317,7 +317,7 @@
 						}
 					}
 					if(x>226 && x<226+76 && y>206 && y<206+22){ //quit
-						socket.disconnect();
+						socket.emit('quit event');
 						ui.frameCount = 0; //copied from restart game code
 						game.buttonDepress = 2;
 						ui.stop_bgm();
@@ -479,7 +479,9 @@ socket.on('fire event', (fireObject) => {
 	if(fireObject.hostAngle!=null && game.playerType=='guest'){game.playerAngle = fireObject.hostAngle;}
 	if(fireObject.guestAngle!=null && game.playerType=='host'){game.enemyAngle = fireObject.guestAngle;}
 	game.fire('no-emit');
-	ui.frameCount = 0;
+	if(game.playerType=='host'&&game.guestFired || game.playerType=='guest'&&game.hostFired){
+		ui.frameCount = 0;
+	}
 });
 
 //resetting planets after a shot

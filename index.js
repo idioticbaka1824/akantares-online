@@ -107,6 +107,18 @@ io.on('connection', (socket) => {
 		}
 	});
 });
+io.on('connection', (socket) => {
+	socket.on('quit event', () => { //copying same code for a 'quit event' where user clicks the 'quit' button. actually having them disconnect from socket was causing problems when they later reconnected
+		console.log('user quit, ' + socket.id);
+		for(i=0; i<sessions.length; i++){
+			if(sessions[i].hostID==socket.id || sessions[i].guestID==socket.id){
+				io.to(sessions[i].hostID).emit('disconnect event', null);
+				let spliced = sessions.splice(i, 1);
+				io.emit('reload event', sessions);
+			}
+		}
+	});
+});
 
 io.on('connection', (socket) => {
 	socket.on('emoji event', (obj) => {
