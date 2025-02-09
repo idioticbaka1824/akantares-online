@@ -240,16 +240,16 @@ THREE`.split('\n');
 			// var r = dist2(x,y);
 			window.keysBeingPressed[' '] = !(this.game.gameState=='lobby') && !(this.game.gameState=='escmenu') && !(this.touchX<32 && this.touchY<32) && !(this.touchX<32 && this.touchY>240-32) && !(this.touchX>320-32 && this.touchY<32) && !(this.touchX>320-32 && this.touchY>240-32);
 			window.keysBeingPressed['Escape'] = (this.touchX<32 && this.touchY<32);
-			window.keysBeingPressed['f'] = (this.touchX>60 && this.touchX<160 && this.touchY<100);
-			window.keysBeingPressed['g'] = (this.touchX>160 && this.touchX<240 && this.touchY<100);
-			window.keysBeingPressed['h'] = (this.touchX>240 && this.touchY<100);
+			window.keysBeingPressed['f'] = this.game.gameState=='escmenu' && (this.touchX<window.width/3);
+			window.keysBeingPressed['g'] = this.game.gameState=='escmenu' && (this.touchX>window.width/3 && this.touchX<window.width*2/3);
+			window.keysBeingPressed['h'] = this.game.gameState=='escmenu' && (this.touchX>window.width*2/3);
 			window.keysBeingPressed['z'] = (this.touchX<32 && this.touchY>240-32);
 			window.keysBeingPressed['ArrowUp'] = (this.touchX>320-32 && this.touchY<32);
 			window.keysBeingPressed['ArrowDown'] = (this.touchX>320-32 && this.touchY>240-32);
 			this.canvas.dispatchEvent(new Event('mousedown', e.touches[0])); //simulating a click event in the lobby when on touchscreen
         }
 
-        onTouchMove(e) { //idk if this is still needed, but im scared to get rid of it and it's not hurting. inherited from organya-js and jiljil-js
+        onTouchMove(e) { //idk if this is still needed, but im scared to get rid of it and it's not hurting. inherited from organya-js
             if (this.touching) {
                 e.preventDefault();
 				window.keysBeingPressed[' '] = false;
@@ -257,15 +257,6 @@ THREE`.split('\n');
                 this.touchY = e.touches[0].clientY - this.canvas.getBoundingClientRect().y;
 				this.touchX /= window.scale;
 				this.touchY /= window.scale;
-				var x = this.touchX - window.width/2;
-				var y = -this.touchY + window.height/2;
-				var r = dist2(x,y);
-				var theta = Math.atan2(y,x);
-				// console.log(theta*180/Math.PI);
-				window.keysBeingPressed['ArrowRight'] = (abs(theta-0)<2*Math.PI*1.5/8);
-				window.keysBeingPressed['ArrowUp'] = (abs(theta-Math.PI/2)<2*Math.PI*1.5/8);
-				window.keysBeingPressed['ArrowLeft'] = ((abs(theta-Math.PI)<2*Math.PI*1.5/8) || (abs(theta - -Math.PI)<2*Math.PI*1.5/8)); //branch cut at \pm\pi
-				window.keysBeingPressed['ArrowDown'] = (abs(theta - -Math.PI/2)<2*Math.PI*1.5/8);
             }
         }
 
@@ -691,16 +682,21 @@ THREE`.split('\n');
 					
 				case 'escmenu':
 					for(let i in this.bgm_names){this.bgms[this.bgm_names[i]].pause();}
-					this.drawString(0,0,'CONTINUE:F');
-					this.drawString(0,8,'RESET   :G');
-					this.drawString(0,16,'ABOUT    :H');
+					if(!('ontouchstart' in window)){
+						this.drawString(0,0,'CONTINUE:F');
+						this.drawString(0,8,'RESET   :G');
+						this.drawString(0,16,'ABOUT    :H');
+					}
 					if ('ontouchstart' in window) {
 						this.ctx.filter = 'brightness(50%)';
-						for(let i=0;i<3;i++){this.ctx.drawImage2(this.bmps['PLANET'],0,48,24,24,80+i*82,26,68,68);} //bubbles around FGH
-						this.ctx.filter = 'brightness('+(65+20*Math.floor((this.frameCount+Math.floor(60*Math.random()))%100==0)).toString()+'%)'; //randomish blinking effect on FGH
-						this.drawString(104,28,'F', 5);
-						this.drawString(104+80*1,28,'G', 5);
-						this.drawString(104+80*2,28,'H', 5);
+						for(let i=0;i<3;i++){this.ctx.drawImage2(this.bmps['PLANET'],0,48,24,24, (window.width/3 - 68)/2 + window.width*i/3 ,16,68,68);} //bubbles around options
+						this.ctx.filter = 'brightness('+(65+20*Math.floor((this.frameCount+Math.floor(60*Math.random()))%50==0)).toString()+'%)'; //randomish blinking effect
+						// this.drawString(104,28,'F', 5);
+						// this.drawString(104+80*1,28,'G', 5);
+						// this.drawString(104+80*2,28,'H', 5);
+						this.drawString((window.width/3 - 68)/2+10,16+68/2-4,'CONTINUE', 1);
+						this.drawString((window.width/3 - 68)/2+19 + window.width/3,16+68/2-4,'RESET', 1);
+						this.drawString((window.width/3 - 68)/2+22 + window.width*2/3,16+68/2-4,'HELP', 1);
 						this.ctx.filter = 'none';
 					}
 					if(this.game.help){

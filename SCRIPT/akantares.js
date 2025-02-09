@@ -31,7 +31,7 @@
 	
     class Game {
         constructor() {
-			this.gameMode = 2; //0,1,2 = singleplayer, multiplayer offline, multiplayer online, instructions screen
+			this.gameMode = 2; //0,1,2,3 = singleplayer, multiplayer offline, multiplayer online, instructions screen
 			this.numGameModes = 4;
 			this.whoseTurn = 0; //0,1 = player1 or player2 (during 2player offline)
 			this.gameState = 'loading'; //loading, startscreen, lobby, playing, escmenu, gameover. actually, no gameover.
@@ -80,7 +80,7 @@
 			this.fadeinDuration = 0.2;
 			this.resumeFrame = 0; //keep track of which frame you were on when paused, so that the game doesn't keep going in the background
 			
-			this.playerName = 'debugName';
+			this.playerName = null;
 			this.playerAngle = 360;
 			this.playerPos = {x:40, y:window.height/2, h:false}; //h for whether it's been hit
 			this.playerMissilePos = {x:this.playerPos.x+10*Math.cos(this.playerAngle*Math.PI/180), y:this.playerPos.y+10*Math.sin(this.playerAngle*Math.PI/180)};
@@ -107,7 +107,8 @@
 		playerPlanetIntersect(){
 			let out = false;
 			for(let i=0; i<this.planets.length; i++){
-				let d = 4 + 8 + this.planets[i].m==0?8:12;
+				let d = 4 + 8;
+				d += this.planets[i].m?12:8;
 				if( (Math.abs(this.planets[i].x-this.playerPos.x)<d && Math.abs(this.planets[i].y-this.playerPos.y)<d) || (Math.abs(this.planets[i].x-this.enemyPos.x)<d && Math.abs(this.planets[i].y-this.enemyPos.y)<d) ){
 					out = true;
 				}
@@ -488,7 +489,7 @@
 				ekeys['z'] = false;
 			}
 			if(ekeys['Escape']){
-				if(this.gameState != 'escmenu' && this.gameMode != 2){ //can't pause when already paused, and can't pause online games
+				if(this.gameState != 'escmenu' && (this.gameMode!=2 || this.gameState=='startscreen')){ //can't pause when already paused, and can't pause online games
 					window.audioContext.suspend();
 					this.resumeFrame = ui.frameCount;
 					this.gameState = 'escmenu';
@@ -531,11 +532,13 @@
 						else if(this.gameMode == 2){
 							let input = null;
 							if(socket != null){
-								input = window.prompt(ui.strEnterName);
+								if(this.playerName == null){input = window.prompt(ui.strEnterName);} //taking into account the possibility they already entered their name earlier and quit at some point and are re-entering the lobby
+								else {input = this.playerName;}
 								if(input != null && input != "" ){ //if they don't enter anything, don't take them to the lobby
 									this.playerName = input.substring(0,12); //names are capped at 12 characters to fit in the column in the lobby
 									this.gameState = 'lobby';
 									this.previousGameState = 'lobby';
+									this.lobbyString = 'strNull';
 									socket.emit('reload event', null); //to display available hosts as soon as you enter lobby (pretend you entered and immediately hit reload)
 									document.getElementById('lobbyList').style.visibility = 'visible';
 									this.readyFadeIn(); //fade-in animation
@@ -555,10 +558,11 @@
 				
 				case 'playing':
 				
-					// if(ekeys['k']){ //debug cheat, remove when finished!!
-						// this.score[0]++;
-						// ekeys['k'] = false;
-					// }
+					if(ekeys['k']){ //debug cheat, remove when finished!!!
+						this.score[0] = this.score[0]+0;
+						this.resetStuff('planets');
+						ekeys['k'] = false;
+					}
 					
 					if(this.gameSubState == 'ready'){
 						if(ekeys['ArrowLeft']){

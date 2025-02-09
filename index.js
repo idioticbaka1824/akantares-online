@@ -144,7 +144,8 @@ io.on('connection', (socket) => {
 function playerPlanetIntersect(resetPlanetsObj){
 	let out = false;
 		for(let i=0; i<resetPlanetsObj.numPlanets; i++){
-			let d = 4 + 8 + resetPlanetsObj.planets[i].m==0?8:12; //the 4 in front is just a little extra
+			let d = 4 + 8; //the 4 in front is just a little extra, the 8 is the radius of the player/enemy planet
+			d += resetPlanetsObj.planets[i].m==0?12:8; //this represents the radius of the obstacle. for some reason if i just added this value in the previous line, it wouldn't work!
 			if( (Math.abs(resetPlanetsObj.planets[i].x-resetPlanetsObj.playerPos.x)<d && Math.abs(resetPlanetsObj.planets[i].y-resetPlanetsObj.playerPos.y)<d) || (Math.abs(resetPlanetsObj.planets[i].x-resetPlanetsObj.enemyPos.x)<d && Math.abs(resetPlanetsObj.planets[i].y-resetPlanetsObj.enemyPos.y)<d) ){
 				out = true;
 			}
@@ -155,19 +156,19 @@ function playerPlanetIntersect(resetPlanetsObj){
 //after a hitting shot when the planets are redrawn
 io.on('connection', (socket) => {
   socket.on('resetPlanets event', (obj) => {
-	console.log('received resetPlanets event');
+	// console.log('received resetPlanets event');
 	let resetPlanetsObj = {playerPos:{h:false}, enemyPos:{h:false}, numPlanets:0, planets:[]};
 	resetPlanetsObj.numPlanets = 1+Math.floor(4*Math.random());
 	for(let i=0; i<resetPlanetsObj.numPlanets; i++){
 		resetPlanetsObj.planets[i] = {x:30+260*Math.random(), y:20+200*Math.random(), m:(Math.random()<0.3), h:0};
 	}
 	do{
-		console.log('(re)drawing...');
+		// console.log('(re)drawing...');
 		resetPlanetsObj.playerPos.x = 27 + Math.floor(65*Math.random());
 		resetPlanetsObj.enemyPos.x = 320-27 - Math.floor(65*Math.random());
 		resetPlanetsObj.playerPos.y = 20 + Math.floor(200*Math.random());
 		resetPlanetsObj.enemyPos.y = 20 + Math.floor(200*Math.random());
-		console.log(playerPlanetIntersect(resetPlanetsObj));
+		// console.log(playerPlanetIntersect(resetPlanetsObj));
 	} while(playerPlanetIntersect(resetPlanetsObj));
     // console.log('resetPlanets event: ' + resetPlanetsObj);
 	io.to(obj.hostID).emit('resetPlanets event', resetPlanetsObj);
