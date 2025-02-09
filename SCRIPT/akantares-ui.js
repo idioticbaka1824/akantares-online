@@ -685,7 +685,7 @@ THREE`.split('\n');
 					if(!('ontouchstart' in window)){
 						this.drawString(0,0,'CONTINUE:F');
 						this.drawString(0,8,'RESET   :G');
-						this.drawString(0,16,'ABOUT    :H');
+						this.drawString(0,16,'HELP    :H');
 					}
 					if ('ontouchstart' in window) {
 						this.ctx.filter = 'brightness(50%)';
