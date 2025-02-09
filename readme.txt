@@ -28,7 +28,7 @@ Initially a Lobby is displayed with a list of players hosting games. On mobile d
 You can host a game by pressing the 'Host' button, and your name and the time is added to the list.
 You can join someone's game by selecting their name/time from the list and clicking the 'Join' button. Once a hosted game is joined, it is removed from the lobby and the players (host and guest) are transferred to the actual gameplay screen to start playing it.
 The shot is carried out once both players have made their move (and they may do so in any order).
-There is also a chat function. You can also choose a funny face for your player from the drop-down list.
+There is also a chat function. You can also choose a funny face for your player.
 
 
 ~~Issues:

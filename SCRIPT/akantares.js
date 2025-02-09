@@ -558,11 +558,11 @@
 				
 				case 'playing':
 				
-					if(ekeys['k']){ //debug cheat, remove when finished!!!
-						this.score[0] = this.score[0]+0;
-						this.resetStuff('planets');
-						ekeys['k'] = false;
-					}
+					// if(ekeys['k']){ //debug cheat, remove when finished!!!
+						// this.score[0] = this.score[0]+1;
+						// this.resetStuff('planets');
+						// ekeys['k'] = false;
+					// }
 					
 					if(this.gameSubState == 'ready'){
 						if(ekeys['ArrowLeft']){
@@ -608,7 +608,7 @@
 								this.rematch[this.playerType] = this.rematchChoiceMade;
 								socket.emit('rematch event', {hostID:this.myHostID, playerType:this.playerType, msg:this.rematchChoiceMade});
 								if(this.rematchChoice == 0){ //copied from restart game code. if we choose not to rematch, we basically disconnect and reset to title screen
-									socket.disconnect();
+									socket.emit('quit event');
 									ui.stop_bgm();
 									window.audioContext.resume();
 									this.gameState = 'startscreen';
