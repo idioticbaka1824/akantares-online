@@ -230,8 +230,10 @@
 			}
 			if(window.navigator.onLine == false && this.lobbyString != 'strError'){
 				this.lobbyString = 'strError';
-				this.disconnectTimer = true; //see disconnectEvent function in index.html
-				ui.frameCount = 2*window.fps;
+				if(this.gameMode==2 && this.gameState=='playing'){
+					this.disconnectTimer = true; //see disconnectEvent function in index.html
+					ui.frameCount = 2*window.fps;
+				}
 			}
 			
 			ui.hasSinceUpdated = true;
@@ -268,6 +270,7 @@
 					if(ui.frameCount>3*window.fps){ //restart game to startscreen if disconnect occurs
 						if(this.disconnectTimer == true){
 							this.disconnectTimer = false;
+							socket.emit('quit event');
 							ui.stop_bgm();
 							window.audioContext.resume();
 							this.gameState = 'startscreen';

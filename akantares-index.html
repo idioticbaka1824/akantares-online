@@ -344,8 +344,10 @@ var socket = io.connect("https://akantares.onrender.com/");
 
 socket.on("connect_error", (err) => {
   game.lobbyString = 'strError';
-  game.disconnectTimer = true; //see disconnectEvent function
-  ui.frameCount = 2*window.fps;
+  if(game.gameMode==2 && game.gameState=='playing'){
+		game.disconnectTimer = true; //see disconnectEvent function
+		ui.frameCount = 2*window.fps;
+	}
 });
 
 socket.on('connect', function() {
@@ -359,7 +361,9 @@ function refreshLobby(sessions){
 	for(let i=0; i<lobbyList.length; i++){
 		lobbyList.remove(i);
 	}
+	let amIStillAHost = false;
 	for(let i=0; i<sessions.length; i++){
+		if(sessions[i].hostID == game.mySocketID){amIStillAHost = true}
 		if(sessions[i].guestID == null){
 			let opt = document.createElement('option');
 			opt.value = JSON.stringify(sessions[i]);
@@ -367,6 +371,7 @@ function refreshLobby(sessions){
 			lobbyList.appendChild(opt);
 		}
 	}
+	if(amIStillAHost == false){game.playerType = 'guest';}
 }
 
 function clearChat(){
@@ -406,7 +411,7 @@ socket.on('start playing', (session) => { //this code is copied from akantares.j
 	game.readyFadeIn();
 });
 socket.on('disconnect event', (msg) => { //this code leads to a condition in update() in akantares.js where the restart code is copied from the case where you restart by pressing 'g' at the esc menu
-    if(game.gameMode==2 && game.gameState!='startscreen'){
+    if(game.gameMode==2 && game.gameState=='playing'){
 		game.disconnectTimer = true;
 		ui.frameCount = 2*window.fps; //in conjunction with checking for >3*fps in akantares.js, this avoids the re-popping up of the 'please take your shot' text when a disconnect happens
 	}
