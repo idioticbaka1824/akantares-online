@@ -88,7 +88,7 @@
 			this.playerMissileAcc = {x:0, y:0};
 			this.playerTrail = [];
 			this.playerCollided = false; //whether or not player's missile has collided with something
-			this.enemyAngle = 360*Math.random();
+			this.enemyAngle = 180;
 			this.enemyPos = {x:256, y:window.height/2, h:false};
 			this.enemyMissilePos = {x:this.enemyPos.x+10*Math.cos(this.enemyAngle*Math.PI/180), y:this.enemyPos.y+10*Math.sin(this.enemyAngle*Math.PI/180)};
 			this.enemyMissileVel = {x:0, y:0};
@@ -96,7 +96,7 @@
 			this.enemyTrail = [];
 			this.enemyCollided = false;
 			
-			this.resultString = '';
+			this.resultString = ''; //encodes information on who was hit, see collisions section
 			
 			this.resetStuff('planets');
 			
@@ -143,7 +143,11 @@
 					this.gameSubState = 'countdown';
 					ui.frameCount = 0;
 				}
-				if(this.gameMode==1){this.whoseTurn = this.whoseTurn + 1;	ui.frameCount = 0;}
+				if(this.gameMode==1){
+					this.whoseTurn = this.whoseTurn + 1;
+					if(this.whoseTurn==1){document.getElementById('fireRange').value=180;}
+					ui.frameCount = 0;
+				}
 			}
 		}
 		
@@ -192,7 +196,8 @@
 					this.playerMissilePos.x = this.playerPos.x + 10*Math.cos(this.playerAngle*Math.PI/180);
 					this.playerMissileVel.y = this.initCatapultSpeed*Math.sin(this.playerAngle*Math.PI/180);
 					this.playerMissilePos.y = this.playerPos.y + 10*Math.sin(this.playerAngle*Math.PI/180);
-					if(this.gameMode==0){this.enemyAngle = 360*Math.random();}
+					if(this.gameMode == 0){this.enemyAngle = 360*Math.random();}
+					if(this.gameMode == 1){document.getElementById('fireRange').value = 360;} //during multiplayer offline, player 1's angle was being set to the slider value, which would invariably be what player 2 had set it to in the last round (and often inconvenient for player 1 to turn it all the way around). this resets that
 					this.enemyMissileVel.x = this.initCatapultSpeed*Math.cos(this.enemyAngle*Math.PI/180);
 					this.enemyMissilePos.x = this.enemyPos.x + 10*Math.cos(this.enemyAngle*Math.PI/180);
 					this.enemyMissileVel.y = this.initCatapultSpeed*Math.sin(this.enemyAngle*Math.PI/180);
@@ -209,6 +214,7 @@
 					this.disabled = false;
 					
 					if(this.resultString.slice(-3)=='hit'){this.resetStuff('planets');}
+					else{if(this.resultString=='miss' && this.whoseTurn==0){ui.sfxs['ERROR'].play();}}
 					this.planets = this.planets.filter((p)=>p.h-p.m<2);
 					
 					document.getElementById('fireButton').disabled = false;
@@ -231,6 +237,7 @@
 			if(window.navigator.onLine == false && this.lobbyString != 'strError'){
 				this.lobbyString = 'strError';
 				if(this.gameMode==2 && this.gameState=='playing'){
+					ui.sfxs['ERROR'].play();
 					this.disconnectTimer = true; //see disconnectEvent function in index.html
 					ui.frameCount = 2*window.fps;
 				}
@@ -273,6 +280,7 @@
 							socket.emit('quit event');
 							ui.stop_bgm();
 							window.audioContext.resume();
+							ui.sfxs['CANCEL'].play();
 							this.gameState = 'startscreen';
 							this.previousGameState = 'startscreen';
 							this.readyFadeIn();
@@ -368,7 +376,7 @@
 									if(!this.playerCollided){this.score[0] += 1; ui.sfxs['HIT'].play();} //if not for this condition, the score would keep increasing
 									this.enemyPos.h = true;
 									this.playerCollided = true;
-									if(this.resultString=='player_1hit'){this.resultString = '2hit';}
+									if(this.resultString=='player_1hit' || this.resultString=='2hit'){this.resultString = '2hit';}
 									else{this.resultString='enemy_1hit'}
 								}
 								//enemyMissile - enemy
@@ -377,7 +385,7 @@
 									if(!this.enemyCollided){this.score[0] += 1; ui.sfxs['HIT'].play();}
 									this.enemyPos.h = true;
 									this.enemyCollided = true;
-									if(this.resultString=='player_1hit'){this.resultString = '2hit';}
+									if(this.resultString=='player_1hit' || this.resultString=='2hit'){this.resultString = '2hit';}
 									else{this.resultString='enemy_1hit'}
 								}
 								//enemyMissile - player
@@ -386,7 +394,7 @@
 									if(!this.enemyCollided){this.score[1] += 1; ui.sfxs['HIT'].play();}
 									this.playerPos.h = true;
 									this.enemyCollided = true;
-									if(this.resultString=='enemy_1hit'){this.resultString = '2hit';}
+									if(this.resultString=='enemy_1hit' || this.resultString=='2hit'){this.resultString = '2hit';}
 									else{this.resultString='player_1hit'}
 								}
 								//playerMissile - player
@@ -395,13 +403,13 @@
 									if(!this.playerCollided){this.score[1] += 1; ui.sfxs['HIT'].play();}
 									this.playerPos.h = true;
 									this.playerCollided = true;
-									if(this.resultString=='enemy_1hit'){this.resultString = '2hit';}
+									if(this.resultString=='enemy_1hit' || this.resultString=='2hit'){this.resultString = '2hit';}
 									else{this.resultString='player_1hit'}
 								}
 								
 								//playerMissile - planets
 								for(let i=0; i<this.planets.length; i++){
-									if(abs(this.playerMissilePos.x-this.planets[i].x)<10+4*this.planets[i].m && abs(this.playerMissilePos.y-this.planets[i].y)<10+4*this.planets[i].m){
+									if(abs(this.playerMissilePos.x-this.planets[i].x)<9+4*this.planets[i].m && abs(this.playerMissilePos.y-this.planets[i].y)<9+4*this.planets[i].m){
 										if(!this.playerCollided){this.planets[i].h += 1; ui.sfxs['HIT'].play();}
 										this.playerCollided = true;
 										if(this.resultString==''){this.resultString = 'miss';}
@@ -409,7 +417,7 @@
 								}
 								//enemyMissile - planets
 								for(let i=0; i<this.planets.length; i++){
-									if(abs(this.enemyMissilePos.x-this.planets[i].x)<10+4*this.planets[i].m && abs(this.enemyMissilePos.y-this.planets[i].y)<10+4*this.planets[i].m){
+									if(abs(this.enemyMissilePos.x-this.planets[i].x)<9+4*this.planets[i].m && abs(this.enemyMissilePos.y-this.planets[i].y)<9+4*this.planets[i].m){
 										if(!this.enemyCollided){this.planets[i].h += 1; ui.sfxs['HIT'].play();}
 										this.enemyCollided = true;
 										if(this.resultString==''){this.resultString = 'miss';}
@@ -418,6 +426,7 @@
 								
 								if(ui.frameCount > 15*window.fps){
 									if(!this.playerCollided && !this.enemyCollided){this.resultString = 'miss';}
+									if(!this.playerCollided || !this.enemyCollided){ui.sfxs['MOVE'].play();}
 									this.playerCollided = true;
 									this.enemyCollided = true;
 								}
@@ -494,6 +503,7 @@
 			if(ekeys['Escape']){
 				if(this.gameState != 'escmenu' && (this.gameMode!=2 || this.gameState=='startscreen')){ //can't pause when already paused, and can't pause online games
 					window.audioContext.suspend();
+					ui.sfxs['CANCEL'].play();
 					this.resumeFrame = ui.frameCount;
 					this.gameState = 'escmenu';
 					ekeys['Escape'] = false;
@@ -503,6 +513,7 @@
 				case 'loading':
 					if(ekeys[' ']){
 						ekeys[' ']=false;
+						ui.sfxs['OK'].play();
 						this.gameState = 'startscreen';
 						this.gameSubState = 'null';
 						this.previousGameState = 'startscreen';
@@ -530,6 +541,7 @@
 							this.gameState = 'playing';
 							this.gameSubState = this.gameMode!=3 ? 'ready' : 1;
 							this.previousGameState = 'playing';
+							ui.sfxs['READY'].play();
 							this.readyFadeIn(); //fade-in animation
 						}
 						else if(this.gameMode == 2){
@@ -604,6 +616,7 @@
 								this.previousGameState = 'playing';
 								document.getElementById('fireRange').style.visibility = 'visible';
 								this.readyFadeIn();
+								ui.sfxs['READY'].play();
 							}
 							if(this.gameMode == 2){
 								ui.frameCount = 0;
@@ -614,6 +627,7 @@
 									socket.emit('quit event');
 									ui.stop_bgm();
 									window.audioContext.resume();
+									ui.sfxs['CANCEL'].play();
 									this.gameState = 'startscreen';
 									this.previousGameState = 'startscreen';
 									clearChat();
@@ -668,22 +682,27 @@
 				case 'escmenu':
 					if(ekeys['f']){
 						window.audioContext.resume();
+						ui.sfxs['CANCEL'].play();
 						ui.frameCount = this.resumeFrame;
 						this.gameState = this.previousGameState;
+						ekeys['f'] = false;
 					}
 					if(ekeys['g']){ //restart code
 						ui.frameCount = 0;
 						ui.stop_bgm();
 						window.audioContext.resume();
+						ui.sfxs['CANCEL'].play();
 						this.gameState = 'loading';
 						this.previousGameState = 'loading';
 						document.getElementById('fireRange').style.visibility = 'visible';
 						document.getElementById('fireButton').disabled = false;
 						document.getElementById('fireDiv').style.opacity = 0;
 						this.readyFadeIn;
+						ekeys['g'] = false;
 					}
 					if(ekeys['h']){
 						this.help = !this.help;
+						ui.sfxs['SELECT'].play();
 						ekeys['h'] = false;
 					}
 					break;

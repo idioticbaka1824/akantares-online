@@ -302,6 +302,7 @@
 							socket.emit('joining event', [document.getElementById('lobbyList').value, game.playerName]);
 							game.playerType = 'guest';
 							game.myHostID = JSON.parse(document.getElementById('lobbyList').value).hostID;
+							ui.sfxs['SELECT'].play();
 						}
 					}
 					if(x>226 && x<226+76 && y>115 && y<115+22){ //host
@@ -314,6 +315,7 @@
 						else{ //the same 'person' can't host multiple games
 							let newSession = {hostName:game.playerName, guestName:null, time:new Date(Date.now()), hostID:null, guestID:null};
 							socket.emit('hosting event', newSession);
+							ui.sfxs['OK'].play();
 						}
 					}
 					if(x>226 && x<226+76 && y>206 && y<206+22){ //quit
@@ -332,6 +334,7 @@
 						ui.frameCount = 0;
 						game.buttonDepress = 3;
 						socket.emit('reload event', null);
+						ui.sfxs['SELECT'].play();
 					}
 				}
 			}
@@ -345,6 +348,7 @@ var socket = io.connect("https://akantares.onrender.com/");
 socket.on("connect_error", (err) => {
   game.lobbyString = 'strError';
   if(game.gameMode==2 && game.gameState=='playing'){
+		ui.sfxs['ERROR'].play();
 		game.disconnectTimer = true; //see disconnectEvent function
 		ui.frameCount = 2*window.fps;
 	}
@@ -400,7 +404,7 @@ socket.on('start playing', (session) => { //this code is copied from akantares.j
 	game.blankScreen = true;
 	game.resetStuff('gameover');
 	window.audioContext.resume();
-	ui.sfxs['OK'].play();
+	ui.sfxs['READY'].play();
 	game.hostName = session.hostName;
 	game.guestName = session.guestName;
     game.gameState = 'playing';
@@ -412,6 +416,7 @@ socket.on('start playing', (session) => { //this code is copied from akantares.j
 });
 socket.on('disconnect event', (msg) => { //this code leads to a condition in update() in akantares.js where the restart code is copied from the case where you restart by pressing 'g' at the esc menu
     if(game.gameMode==2 && game.gameState=='playing'){
+		ui.sfxs['ERROR'].play();
 		game.disconnectTimer = true;
 		ui.frameCount = 2*window.fps; //in conjunction with checking for >3*fps in akantares.js, this avoids the re-popping up of the 'please take your shot' text when a disconnect happens
 	}
@@ -510,6 +515,7 @@ socket.on('rematch event', (rematchObj) => {
 			ui.frameCount = 0; //copied from restart game code
 			ui.stop_bgm();
 			window.audioContext.resume();
+			ui.sfxs['CANCEL'].play();
 			game.gameState = 'startscreen';
 			game.previousGameState = 'startscreen';
 			game.readyFadeIn();
@@ -519,7 +525,7 @@ socket.on('rematch event', (rematchObj) => {
 		if(game.rematch['host']&&game.rematch['guest'] == 1){ //if opponent also agrees to rematch
 			game.resetStuff('gameover'); //copied from start over event code
 			window.audioContext.resume();
-			ui.sfxs['OK'].play();
+			ui.sfxs['READY'].play();
 			game.gameState = 'playing';
 			game.gameSubState = 'ready';
 			game.previousGameState = 'playing';

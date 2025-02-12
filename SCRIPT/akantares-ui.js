@@ -440,11 +440,11 @@ THREE`.split('\n');
 					
 					if(!(this.game.gameSubState=='collided' && this.game.playerPos.h)){this.ctx.drawImage2(this.bmps['PLANET'], (this.frameCount%6==0 && this.game.playerPos.h)?16:16*this.game.hostEmoji,0+32*(this.frameCount%6==0 && this.game.playerPos.h),16,16, this.game.playerPos.x-16/2, this.game.playerPos.y-16/2, 16,16);} //player planet. alternate with white circle after getting hit but before conclusion of the overall shot. don't draw if it has been hit and exploding animation is ongoing.
 					if(!(this.game.gameSubState=='collided' && this.game.enemyPos.h)){this.ctx.drawImage2(this.bmps['PLANET'], (this.frameCount%6==0 && this.game.enemyPos.h)?16:16*this.game.guestEmoji,16+16*(this.frameCount%6==0 && this.game.enemyPos.h),16,16, this.game.enemyPos.x-16/2, this.game.enemyPos.y-16/2, 16,16);} //enemy planet
-					if(this.game.gameMode !=2 || this.game.playerType=='host'){
+					if(!((this.game.gameMode==1 && this.game.whoseTurn==1) || (this.game.gameMode==2 && this.game.playerType=='guest'))){
 						this.ctx.drawImage2(this.bmps['CATAPULT'], 4*(this.frameCount%10<5 && this.game.gameSubState=='ready')+1, 1, 3, 3, this.game.playerPos.x+10*Math.cos(this.game.playerAngle*Math.PI/180)-3/2, this.game.playerPos.y+10*Math.sin(this.game.playerAngle*Math.PI/180)-3/2, 3, 3); //player catapult
 						this.ctx.drawImage2(this.bmps['CATAPULT'], 1, 1, 3, 3, this.game.enemyPos.x+10*Math.cos(this.game.enemyAngle*Math.PI/180)-3/2, this.game.enemyPos.y+10*Math.sin(this.game.enemyAngle*Math.PI/180)-3/2, 3, 3); //enemy catapult
 					}
-					if(this.game.gameMode ==2 && this.game.playerType=='guest'){
+					if((this.game.gameMode==1 && this.game.whoseTurn==1) || (this.game.gameMode==2 && this.game.playerType=='guest')){
 						this.ctx.drawImage2(this.bmps['CATAPULT'], 4*(this.frameCount%10<5 && this.game.gameSubState=='ready')+1, 1, 3, 3, this.game.enemyPos.x+10*Math.cos(this.game.enemyAngle*Math.PI/180)-3/2, this.game.enemyPos.y+10*Math.sin(this.game.enemyAngle*Math.PI/180)-3/2, 3, 3); //'enemy' catapult (guest in 2player online)
 						this.ctx.drawImage2(this.bmps['CATAPULT'], 1, 1, 3, 3, this.game.playerPos.x+10*Math.cos(this.game.playerAngle*Math.PI/180)-3/2, this.game.playerPos.y+10*Math.sin(this.game.playerAngle*Math.PI/180)-3/2, 3, 3);
 					}
@@ -711,7 +711,7 @@ THREE`.split('\n');
 			if('ontouchstart' in window){
 				this.ctx.globalAlpha = 0.12;
 				this.drawString(8, window.height-16, 'Z');
-				if(this.game.gameState != 'escmenu'){
+				if(this.game.gameState!='escmenu' && this.game.gameState!='loading'){
 					// this.ctx.drawImage2(this.bmps['PLANET'],0,32,16,16,0,0,32,32);
 					this.drawString(8, 10, 'Esc');
 				}
