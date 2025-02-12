@@ -398,10 +398,10 @@ THREE`.split('\n');
 				
 				case 'lobby':
 					this.fadeIn();
-					if(!this.bgms_playing['READY']){
+					if(!this.bgms_playing['XXXX']){
 						this.stop_bgm();
-						this.play_bgm('READY');
-						this.bgms_playing['READY'] = true;
+						this.play_bgm('XXXX');
+						this.bgms_playing['XXXX'] = true;
 					}
 					this.ctx.drawImage2(this.bmps['LOBBY'+((window.lang=='ja-JP')?'_JP':'')],0,0,320,240,0,0,320,240);
 					if(this.game.buttonDepress != null && this.frameCount < 0.5*window.fps){
