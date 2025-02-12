@@ -214,7 +214,7 @@
 					this.disabled = false;
 					
 					if(this.resultString.slice(-3)=='hit'){this.resetStuff('planets');}
-					else{if(this.resultString=='miss' && this.whoseTurn==0){ui.sfxs['ERROR'].play();}}
+					// else{if(this.resultString=='miss' && this.whoseTurn==0){ui.sfxs['ERROR'].play();}}
 					this.planets = this.planets.filter((p)=>p.h-p.m<2);
 					
 					document.getElementById('fireButton').disabled = false;
@@ -541,7 +541,7 @@
 							this.gameState = 'playing';
 							this.gameSubState = this.gameMode!=3 ? 'ready' : 1;
 							this.previousGameState = 'playing';
-							ui.sfxs['READY'].play();
+							if(this.gameMode != 3){ui.sfxs['READY'].play();}
 							this.readyFadeIn(); //fade-in animation
 						}
 						else if(this.gameMode == 2){
