@@ -93,7 +93,7 @@ XXXX`.split('\n');
 			this.bgmURLs = {};
 			this.bgms_playing = {};
 			for(const i in this.bgm_names){
-				// this.bgmURLs[this.bgm_names[i]] = new URL('https://raadshaikh.github.io/akantares-js/WAVE/BGM_'+this.bgm_names[i]+'.wav'); //no longer needed in this server environment
+				// this.bgmURLs[this.bgm_names[i]] = new URL('https://idioticbaka1824.github.io/akantares-js/WAVE/BGM_'+this.bgm_names[i]+'.wav'); //no longer needed in this server environment
 				this.bgmURLs[this.bgm_names[i]] = 'BGM_'+this.bgm_names[i]+'.wav';
 				this.bgms[this.bgm_names[i]] = new Audio();
 				this.bgms[this.bgm_names[i]].src = this.bgmURLs[this.bgm_names[i]];
@@ -112,7 +112,7 @@ SELECT
 THREE`.split('\n');
 			this.sfxs = {};
 			for(const i in sfx_names){
-				// this.sfxs[sfx_names[i]] = new Audio(new URL('https://raadshaikh.github.io/akantares-js/WAVE/PTN_'+sfx_names[i]+'.wav'));
+				// this.sfxs[sfx_names[i]] = new Audio(new URL('https://idioticbaka1824.github.io/akantares-js/WAVE/PTN_'+sfx_names[i]+'.wav'));
 				this.sfxs[sfx_names[i]] = new Audio('PTN_'+sfx_names[i]+'.wav');
 			}
 			this.muteSFX = {}; //so they don't play repeatedly. will reset using resetStuff in the other script.
