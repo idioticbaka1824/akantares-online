@@ -492,7 +492,7 @@
 				resizeSlider();
 				canvasContainer.style.height = gameCanvas.height + document.getElementById('fireDiv').offsetHeight + document.getElementById('lang-radios').offsetHeight; //there has to be a css way to do this???
 				let lobbyList = document.getElementById('lobbyList');
-				let newLobbyListStyle = window.scale==2 ? 'position:relative; font-size:26px; left:-15px; top:212px; width:361px; height:180px' : 'position:relative; font-size:13px; left:23px; top:106px; width:182px; height:90px';
+				let newLobbyListStyle = window.scale==2 ? 'position:relative; font-size:26px; left:46px; top:212px; width:361px; height:180px' : 'position:relative; font-size:13px; left:23px; top:106px; width:182px; height:90px';
 				newLobbyListStyle = 'visibility:' + (this.gameState=='lobby'?'visible':'hidden') + '; ' + newLobbyListStyle;
 				lobbyList.style = newLobbyListStyle;
 				document.getElementById('chat-list').style.height = gameCanvas.height;
